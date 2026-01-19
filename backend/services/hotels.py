@@ -43,7 +43,7 @@ def search_hotels(location, check_in_date=None, check_out_date=None):
 
     try:
         print(f"DEBUG: Searching hotels in {location} ({check_in_date} to {check_out_date})...", flush=True)
-        response = requests.get(url, params=params, timeout=25)
+        response = requests.get(url, params=params, timeout=8)
         response.raise_for_status()
         data = response.json()
         

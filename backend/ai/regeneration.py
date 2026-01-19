@@ -5,7 +5,10 @@ import uuid
 from datetime import datetime
 try:
     from backend.database.db import itineraries_collection
-    from backend.ai.itinerary import calculate_costs, get_mock_itinerary, call_llm
+    from backend.ai.itinerary import (
+        calculate_costs, get_mock_itinerary, call_llm,
+        DEFAULT_CURRENCY_SYMBOL, DEFAULT_CURRENCY_CODE
+    )
     from backend.trips.schema import Itinerary
 except ImportError:
     from database.db import itineraries_collection
@@ -76,7 +79,35 @@ JSON Structure:
 def regenerate_itinerary(trip, existing_itinerary, instruction, constraints):
     print(f"\nSTARTING ITINERARY REGENERATION for {trip['destination']}", flush=True)
     
-    prompt = build_regeneration_prompt(trip, existing_itinerary, instruction, constraints)
+    # Fetch User Preferences
+    currency_symbol = DEFAULT_CURRENCY_SYMBOL
+    currency_code = DEFAULT_CURRENCY_CODE
+    language = "English"
+
+    if itineraries_collection is not None:
+         # Try to find user preferences
+         try:
+             from backend.database.db import users_collection
+             user = users_collection.find_one({"uid": trip.get("user_id")})
+             if user and user.get("preferences"):
+                 prefs = user.get("preferences")
+                 
+                 # Currency
+                 curr_pref = prefs.get("currency", "INR")
+                 if curr_pref == "USD":
+                     currency_symbol = "$"
+                     currency_code = "USD"
+                 elif curr_pref == "EUR":
+                     currency_symbol = "€"
+                     currency_code = "EUR"
+                 
+                 # Language
+                 language = prefs.get("language", "English")
+                 print(f"DEBUG: Using User Prefs for Regen -> Currency: {currency_code}, Lang: {language}", flush=True)
+         except Exception as e:
+             print(f"DEBUG: Failed to load user prefs for regen: {e}")
+
+    prompt = build_regeneration_prompt(trip, existing_itinerary, instruction, constraints, currency_symbol=currency_symbol, language=language)
     
     raw_itinerary = call_llm(prompt, trip)
     
@@ -85,20 +116,61 @@ def regenerate_itinerary(trip, existing_itinerary, instruction, constraints):
         raw_itinerary = existing_itinerary
     
     # Recalculate costs
-    cost_summary = calculate_costs(raw_itinerary.get("days", []), currency_symbol=DEFAULT_CURRENCY_SYMBOL)
+    cost_summary = calculate_costs(raw_itinerary.get("days", []), currency_symbol=currency_symbol)
     
     raw_days = raw_itinerary.get("days", [])
     if not raw_days:
         raw_days = existing_itinerary.get("days", [])
+    
+    # ---------------------------------------------------------
+    # COORDINATE REPAIR: Ensure all places have valid Lat/Lng
+    # ---------------------------------------------------------
+    try:
+        from backend.services.places import get_coordinates
+    except ImportError:
+        from services.places import get_coordinates
         
+    print("DEBUG: Verifying coordinates for regenerated places...", flush=True)
+    for day in raw_days:
+        for place in day.get("places", []):
+            try:
+                # If lat/lng are 0, missing, or look like defaults, try to repair
+                p_lat = place.get("lat")
+                p_lng = place.get("lng")
+                name = place.get("name")
+                
+                needs_repair = False
+                if not p_lat or not p_lng: needs_repair = True
+                if p_lat == 0 and p_lng == 0: needs_repair = True
+                
+                # If repair needed and we have a name
+                if needs_repair and name and "Explore" not in name:
+                    # Construct search query: "Place Name, Destination"
+                    query = f"{name}, {trip['destination']}"
+                    print(f"DEBUG: Repairing coords for '{query}'...", flush=True)
+                    new_lat, new_lng = get_coordinates(query)
+                    
+                    if new_lat and new_lng:
+                        place["lat"] = new_lat
+                        place["lng"] = new_lng
+                        print(f"DEBUG: Repaired -> {new_lat}, {new_lng}")
+                    else:
+                        # Fallback to destination center if specific place fails
+                        dest_lat, dest_lng = get_coordinates(trip['destination'])
+                        if dest_lat:
+                             place["lat"] = dest_lat
+                             place["lng"] = dest_lng
+            except Exception as e:
+                print(f"DEBUG: Coord repair failed for {place.get('name')}: {e}")
+
     updated_itinerary = {
         "days": raw_days,
         "topHotels": raw_itinerary.get("topHotels", existing_itinerary.get("topHotels", [])),
         "safetyAdvisory": raw_itinerary.get("safetyAdvisory", existing_itinerary.get("safetyAdvisory", "Standard precautions.")),
         "travelTips": raw_itinerary.get("travelTips", existing_itinerary.get("travelTips", [])),
         "costSummary": cost_summary,
-        "currencySymbol": DEFAULT_CURRENCY_SYMBOL,
-        "currencyCode": DEFAULT_CURRENCY_CODE,
+        "currencySymbol": currency_symbol,
+        "currencyCode": currency_code,
         "generatedFrom": "regenerate",
         "lastPromptUsed": prompt,
         "updatedAt": datetime.utcnow()

@@ -7,6 +7,8 @@ import RecentTrips from '../../components/dashboard/RecentTrips';
 import TrendingSuggestions from '../../components/dashboard/TrendingSuggestions';
 
 const Dashboard = () => {
+  const [selectedSuggestion, setSelectedSuggestion] = React.useState(null);
+
   return (
     <AppLayout>
       <div className="p-8 max-w-7xl mx-auto pb-24">
@@ -17,14 +19,14 @@ const Dashboard = () => {
 
           {/* Left Column (Main Content) */}
           <div className="lg:col-span-2 space-y-8">
-            <AITripCreator />
+            <AITripCreator initialData={selectedSuggestion} />
             <SafetyWidget />
           </div>
 
           {/* Right Column (Sidebar Widgets) */}
           <div className="space-y-8">
             <RecentTrips />
-            <TrendingSuggestions />
+            <TrendingSuggestions onSelectSuggestion={setSelectedSuggestion} />
           </div>
 
 

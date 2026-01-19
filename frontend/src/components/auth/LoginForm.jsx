@@ -2,15 +2,20 @@ import { useState } from "react";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
 import { auth, googleProvider } from "../../services/firebase";
-import { Mail, Lock, Check, Loader2 } from 'lucide-react';
+import { apiService } from "../../services/apiService";
+import { Mail, Lock, Check, Loader2, ShieldCheck, ArrowLeft } from 'lucide-react';
 
 export default function LoginForm() {
   const navigate = useNavigate();
+
+  const [step, setStep] = useState('login'); // 'login' | '2fa'
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const [verificationCode, setVerificationCode] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -19,31 +24,124 @@ export default function LoginForm() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate("/dashboard");
+      await check2FAStatus();
     } catch (err) {
       setError("Invalid email or password");
-    } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError("");
     try {
       await signInWithPopup(auth, googleProvider);
-      navigate("/dashboard");
+      await check2FAStatus();
     } catch (error) {
       console.error("Google Sign-In Error:", error);
-      // Show more detailed error for debugging
       if (error.code === 'auth/popup-closed-by-user') {
         setError("Sign-in cancelled.");
-      } else if (error.code === 'auth/operation-not-allowed') {
-        setError("Google Sign-In is not enabled in Firebase Console.");
       } else {
         setError(error.message || "Failed to sign in with Google");
       }
+      setLoading(false);
     }
   };
 
+  const check2FAStatus = async () => {
+    try {
+      // Fetch user profile to check if 2FA is enabled
+      const profile = await apiService.getProfile(auth);
+
+      if (profile.two_factor_enabled) {
+        setStep('2fa');
+        setLoading(false);
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      console.error("Failed to check 2FA status:", err);
+      // Fallback: If we can't check profile, we assume no 2FA or let backend block subsequent requests?
+      // Ideally we'd block here, but for now let's let them in and if backend fails later, so be it.
+      // Or better: Show error.
+      setError("Failed to verify account settings. Please try again.");
+      setLoading(false);
+    }
+  };
+
+  const handleVerify2FA = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      await apiService.verify2FA(auth, verificationCode);
+      navigate("/dashboard");
+    } catch (err) {
+      setError("Invalid verification code. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ----------------------------------------------------------------------
+  // RENDER: 2FA Input
+  // ----------------------------------------------------------------------
+  if (step === '2fa') {
+    return (
+      <div className="bg-white w-full max-w-md rounded-2xl shadow-xl p-8 border border-gray-100/50">
+        <div className="mb-6 text-center">
+          <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
+            <ShieldCheck size={32} />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Two-Factor Auth</h2>
+          <p className="text-gray-500 mt-2 text-sm leading-relaxed">
+            Extra security is enabled. Please enter the 6-digit code from your authenticator app.
+          </p>
+        </div>
+
+        <form onSubmit={handleVerify2FA} className="space-y-6">
+          <div>
+            <label className="text-xs font-semibold text-gray-700 block mb-1.5 text-center uppercase tracking-wider">Verification Code</label>
+            <input
+              type="text"
+              maxLength="6"
+              autoFocus
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
+              className="w-full text-center text-3xl tracking-[1em] font-mono py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:tracking-normal"
+              placeholder="000000"
+            />
+          </div>
+
+          {error && (
+            <div className="p-2.5 rounded-lg bg-red-50 border border-red-100 text-red-600 text-xs font-medium flex items-center justify-center gap-2 animate-in fade-in slide-in-from-top-1">
+              ⚠️ {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading || verificationCode.length !== 6}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:shadow-none"
+          >
+            {loading ? <Loader2 size={18} className="animate-spin" /> : "Verify & Sign In"}
+          </button>
+        </form>
+
+        <button
+          onClick={() => setStep('login')}
+          className="w-full mt-6 flex items-center justify-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors"
+        >
+          <ArrowLeft size={14} /> Back to Login
+        </button>
+      </div>
+    );
+  }
+
+  // ----------------------------------------------------------------------
+  // RENDER: Login Form (Default)
+  // ----------------------------------------------------------------------
   return (
     <div className="bg-white w-full max-w-md rounded-2xl shadow-xl p-8 border border-gray-100/50">
       <div className="mb-6">

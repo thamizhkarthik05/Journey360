@@ -25,7 +25,7 @@ export default function SignupForm() {
       await signOut(auth);
 
       // Redirect back to login page
-      navigate("/");
+      navigate("/login");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -78,7 +78,7 @@ export default function SignupForm() {
         Already have an account?{" "}
         <span
           className="text-blue-600 cursor-pointer hover:underline"
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/login")}
         >
           Login
         </span>

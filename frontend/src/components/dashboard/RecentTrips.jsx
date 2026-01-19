@@ -55,7 +55,7 @@ const RecentTrips = () => {
                 </button>
             </div>
             <div className="space-y-4">
-                {trips.map((trip) => (
+                {trips.slice(0, 4).map((trip) => (
                     <div
                         key={trip.trip_id}
                         onClick={() => navigate(`/itinerary?trip_id=${trip.trip_id}`)}

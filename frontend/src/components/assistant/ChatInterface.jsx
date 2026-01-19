@@ -42,7 +42,7 @@ const ChatInterface = () => {
 
         try {
             const data = await apiService.chat(auth, userMsgContent);
-            const response = data.text || data.response || data;
+            const response = data.reply || data.text || data.response || data;
 
             setMessages(prev => [...prev, {
                 id: Date.now() + 1,

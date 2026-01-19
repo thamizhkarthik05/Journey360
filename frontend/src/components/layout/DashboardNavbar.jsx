@@ -61,9 +61,9 @@ const DashboardNavbar = () => {
                     <button className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                         <Bell size={20} />
                     </button>
-                    <button className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+                    <Link to="/settings" className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                         <Settings size={20} />
-                    </button>
+                    </Link>
                 </div>
 
                 {/* Profile & Logout */}

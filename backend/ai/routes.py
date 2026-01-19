@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 try:
     from backend.database.db import trips_collection, itineraries_collection
     from backend.ai.itinerary import generate_itinerary
@@ -51,13 +51,30 @@ def get_ar_nearby(trip_id: str, lat: float, lng: float, radius: float = 1000, us
     return nearby_places
 
 @router.post("/ai/itinerary/generate")
-def generate(trip_id: str, user=Depends(get_current_user)):
+def generate(trip_id: str, background_tasks: BackgroundTasks, user=Depends(get_current_user)):
     trip = trips_collection.find_one({"trip_id": trip_id, "user_id": user["uid"]})
     if not trip:
         raise HTTPException(status_code=404, detail="Trip not found")
     
     try:
         itinerary = generate_itinerary(trip)
+        
+        # Send Interactive Email via Background Task
+        try:
+            from backend.services.notification import notification_service
+            # Check user preferences (default to True if not set)
+            # In a real app, we'd query the user's preferences from the DB here.
+            # For this MVP, we assume they want it if the valid email is present.
+            if user.get("email"):
+               background_tasks.add_task(
+                   notification_service.send_trip_itinerary_email,
+                   to_email=user["email"],
+                   trip_title=trip.get("destination", "Your Trip"),
+                   itinerary=itinerary
+               )
+        except Exception as notify_err:
+            print(f"Failed to queue notification: {notify_err}")
+
         return itinerary
     except Exception as e:
         err_msg = str(e)
@@ -80,7 +97,7 @@ def get_itinerary(trip_id: str, user=Depends(get_current_user)):
     return itinerary
 
 @router.post("/ai/itinerary/regenerate")
-def regenerate(data: dict, user=Depends(get_current_user)):
+def regenerate(data: dict, background_tasks: BackgroundTasks, user=Depends(get_current_user)):
     trip_id = data.get("tripId")
     instruction = data.get("instruction")
     constraints = data.get("constraints", {})
@@ -98,6 +115,20 @@ def regenerate(data: dict, user=Depends(get_current_user)):
         
     try:
         updated_itinerary = regenerate_itinerary(trip, existing_itinerary, instruction, constraints)
+        
+        # Send Interactive Email via Background Task (Regeneration Update)
+        try:
+            from backend.services.notification import notification_service
+            if user.get("email"):
+               background_tasks.add_task(
+                   notification_service.send_trip_itinerary_email,
+                   to_email=user["email"],
+                   trip_title=trip.get("destination", "Your Trip") + " (Updated)",
+                   itinerary=updated_itinerary
+               )
+        except Exception as notify_err:
+            print(f"Failed to queue notification: {notify_err}")
+
         return {"message": "Itinerary updated successfully", "updatedItinerary": updated_itinerary}
     except Exception as e:
         err_msg = str(e)

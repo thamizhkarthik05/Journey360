@@ -62,7 +62,10 @@ export const apiService = {
             headers,
             body: JSON.stringify({ tripId, instruction, constraints })
         });
-        if (!response.ok) throw new Error("Failed to regenerate itinerary");
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || "Failed to regenerate itinerary");
+        }
         return response.json();
     },
 
@@ -86,6 +89,79 @@ export const apiService = {
             headers
         });
         if (!response.ok) throw new Error("Failed to assess safety");
+        return response.json();
+    },
+
+    // User Profile
+    getProfile: async (auth) => {
+        const headers = await getHeaders(auth);
+        const response = await fetch(`${BASE_URL}/users/me`, {
+            headers
+        });
+        if (!response.ok) throw new Error('Failed to fetch profile');
+        return response.json();
+    },
+
+    updateProfile: async (auth, data) => {
+        const headers = await getHeaders(auth);
+        const response = await fetch(`${BASE_URL}/users/me`, {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify(data)
+        });
+        if (!response.ok) throw new Error('Failed to update profile');
+        return response.json();
+    },
+
+    sendTestNotification: async (auth) => {
+        const headers = await getHeaders(auth);
+        const response = await fetch(`${BASE_URL}/users/test-notify`, {
+            method: 'POST',
+            headers
+        });
+        if (!response.ok) throw new Error('Failed to send test notification');
+        return response.json();
+    },
+
+    deleteAccount: async (auth) => {
+        const headers = await getHeaders(auth);
+        const response = await fetch(`${BASE_URL}/users/me`, {
+            method: 'DELETE',
+            headers
+        });
+        if (!response.ok) throw new Error('Failed to delete account');
+        return response.json();
+    },
+
+    // 2FA Endpoints
+    setup2FA: async (auth) => {
+        const headers = await getHeaders(auth);
+        const response = await fetch(`${BASE_URL}/users/2fa/setup`, {
+            method: 'POST',
+            headers
+        });
+        if (!response.ok) throw new Error('Failed to setup 2FA');
+        return response.json();
+    },
+
+    verify2FA: async (auth, code) => {
+        const headers = await getHeaders(auth);
+        const response = await fetch(`${BASE_URL}/users/2fa/verify`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ code })
+        });
+        if (!response.ok) throw new Error('Failed to verify code');
+        return response.json();
+    },
+
+    disable2FA: async (auth) => {
+        const headers = await getHeaders(auth);
+        const response = await fetch(`${BASE_URL}/users/2fa/disable`, {
+            method: 'POST',
+            headers
+        });
+        if (!response.ok) throw new Error('Failed to disable 2FA');
         return response.json();
     }
 };

@@ -82,7 +82,64 @@ const AutoPopupMarker = ({ position, label, bookingUrl, timestamp }) => {
     );
 };
 
-const TimelineEvent = ({ event, index, total, onLocate, currency = '₹' }) => {
+// Currency Conversion Helper
+const EXCHANGE_RATES = {
+    'INR': { 'USD': 0.012, 'EUR': 0.011, 'INR': 1 },
+    'USD': { 'INR': 83.5, 'EUR': 0.92, 'USD': 1 },
+    'EUR': { 'INR': 90.5, 'USD': 1.09, 'EUR': 1 }
+};
+
+const getCurrencySymbol = (code) => {
+    switch (code) {
+        case 'USD': return '$';
+        case 'EUR': return '€';
+        case 'INR': return '₹';
+        default: return code;
+    }
+};
+
+const PriceDisplay = ({ amount, sourceCode = 'INR', targetCode = 'INR', className }) => {
+    // 1. Clean the amount string/number
+    let numericVal = 0;
+    if (typeof amount === 'number') {
+        numericVal = amount;
+    } else if (typeof amount === 'string') {
+        // Remove known symbols and commas
+        const clean = amount.replace(/[₹$€,]/g, '').trim();
+        numericVal = parseFloat(clean) || 0;
+    }
+
+    // 2. Identify Source Code (if symbol passed in amount overrides prop)
+    // Actually, we rely on sourceCode prop usually being the global itinerary currency code
+
+    // 3. Convert
+    // Default to 1:1 if rate unknown
+    const rates = EXCHANGE_RATES[sourceCode] || {};
+    const rate = rates[targetCode] || 1;
+
+    // If source and target same, just format
+    if (sourceCode === targetCode && rate === 1) {
+        // keep original if possible or reformat? Reformat ensures consistency
+    }
+
+    const converted = numericVal * rate;
+    // Check if result is valid
+    if (isNaN(converted)) {
+        return <span className={className}>{amount}</span>;
+    }
+
+    const finalVal = Math.round(converted).toLocaleString();
+    const symbol = getCurrencySymbol(targetCode);
+
+    return (
+        <span className={className}>
+            <span className="font-sans">{symbol}</span>
+            <span>{finalVal}</span>
+        </span>
+    );
+};
+
+const TimelineEvent = ({ event, index, total, onLocate, sourceCurrencyCode, targetCurrencyCode }) => {
     const isHotel = event.category?.toLowerCase() === 'hotel';
 
     return (
@@ -131,8 +188,11 @@ const TimelineEvent = ({ event, index, total, onLocate, currency = '₹' }) => {
                         <div className="flex items-center gap-4 text-xs font-medium text-slate-400">
                             {event.estimatedCost !== undefined && (
                                 <div className="flex items-center gap-1.5">
-                                    <span className="font-sans">{currency}</span>
-                                    <span>{event.estimatedCost}</span>
+                                    <PriceDisplay
+                                        amount={event.estimatedCost}
+                                        sourceCode={sourceCurrencyCode}
+                                        targetCode={targetCurrencyCode}
+                                    />
                                 </div>
                             )}
                             {event.duration && !isHotel && (
@@ -187,26 +247,41 @@ const ItineraryPage = () => {
     const [mapZoom, setMapZoom] = useState(2);
     const [showHotels, setShowHotels] = useState(true);
 
+    // User Preference State
+    const [targetCurrency, setTargetCurrency] = useState('INR');
+
     useEffect(() => {
-        const fetchItinerary = async () => {
+        const fetchItineraryAndPrefs = async () => {
             if (!tripId) return;
             try {
+                // 1. Fetch Itinerary
                 const data = await apiService.getItinerary(auth, tripId);
                 setItinerary(data);
+
+                // 2. Fetch User Prefs
+                if (auth.currentUser) {
+                    try {
+                        const profile = await apiService.getProfile(auth);
+                        if (profile.preferences?.currency) {
+                            setTargetCurrency(profile.preferences.currency);
+                        }
+                    } catch (err) {
+                        console.warn("Failed to fetch user prefs:", err);
+                    }
+                }
             } catch (error) {
                 console.error("Fetch Error:", error);
-                // If not found, try to generate it? Or just error
-                alert("Failed to load itinerary. Ensure it's generated.");
+                alert("Failed to load itinerary.");
             } finally {
                 setLoading(false);
             }
         };
 
         if (auth.currentUser) {
-            fetchItinerary();
+            fetchItineraryAndPrefs();
         } else {
             const unsub = auth.onAuthStateChanged(user => {
-                if (user) fetchItinerary();
+                if (user) fetchItineraryAndPrefs();
             });
             return unsub;
         }
@@ -217,10 +292,8 @@ const ItineraryPage = () => {
         if (itinerary && itinerary.days) {
             const dayData = itinerary.days.find(d => d.dayNumber === activeDay) || itinerary.days[0];
             if (dayData && dayData.places && dayData.places.length > 0) {
-                // Find first valid coordinate
                 const firstPlace = dayData.places.find(p => p.lat && p.lng);
                 if (firstPlace) {
-                    console.log(`[MAP] Centering on ${firstPlace.name}: ${firstPlace.lat}, ${firstPlace.lng}`);
                     setMapCenter([parseFloat(firstPlace.lat), parseFloat(firstPlace.lng)]);
                     setMapZoom(13);
                 }
@@ -240,9 +313,8 @@ const ItineraryPage = () => {
                 timestamp: Date.now()
             });
             setMapCenter([lat, lng]);
-            setMapZoom(17); // Deeper zoom for "locate"
+            setMapZoom(17);
         } else {
-            console.warn("Location coordinates missing for:", place.name);
             if (itinerary.topHotels?.[0]?.lat) {
                 setMapCenter([itinerary.topHotels[0].lat, itinerary.topHotels[0].lng]);
                 setMapZoom(13);
@@ -276,13 +348,15 @@ const ItineraryPage = () => {
     if (!itinerary) return (
         <AppLayout>
             <div className="flex items-center justify-center min-h-screen">
-                <p>No itinerary found for this trip.</p>
+                <p>No itinerary found.</p>
             </div>
         </AppLayout>
     );
 
     const currentDayData = itinerary.days.find(d => d.dayNumber === activeDay) || itinerary.days[0];
-    const currency = itinerary.currencySymbol || '₹';
+
+    // Determine Source Currency from Itinerary (Default to INR if missing)
+    const sourceCurrencyCode = itinerary.currencyCode || 'INR';
 
     return (
         <AppLayout>
@@ -301,19 +375,25 @@ const ItineraryPage = () => {
                             <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">{itinerary.destination} Adventure</h1>
                             <div className="flex items-center gap-2 text-sm font-medium">
                                 <Shield className="w-4 h-4 text-emerald-500 fill-emerald-500" />
-                                <span className="text-slate-600">AI Generated Optimized Route • {currency}{itinerary.budget} Budget</span>
+                                <span className="text-slate-600 flex items-center gap-1">
+                                    AI Generated Optimized Route •
+                                    <PriceDisplay amount={itinerary.budget} sourceCode={sourceCurrencyCode} targetCode={targetCurrency} />
+                                    Budget
+                                </span>
                             </div>
                         </div>
 
                         <div className="flex gap-4 overflow-x-auto pb-2 xl:pb-0">
                             {[
-                                { label: "TOTAL COST", value: `${currency}${itinerary.costSummary.total}` },
-                                { label: "FOOD", value: `${currency}${itinerary.costSummary.food}` },
-                                { label: "STAY", value: `${currency}${itinerary.costSummary.stay}` }
+                                { label: "TOTAL COST", value: itinerary.costSummary.total },
+                                { label: "FOOD", value: itinerary.costSummary.food },
+                                { label: "STAY", value: itinerary.costSummary.stay }
                             ].map((stat, idx) => (
                                 <div key={idx} className="bg-white px-5 py-2.5 rounded-xl border border-slate-200 shadow-sm min-w-[130px]">
                                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">{stat.label}</div>
-                                    <div className="text-xl font-bold text-slate-900">{stat.value}</div>
+                                    <div className="text-xl font-bold text-slate-900">
+                                        <PriceDisplay amount={stat.value} sourceCode={sourceCurrencyCode} targetCode={targetCurrency} />
+                                    </div>
                                 </div>
                             ))}
 
@@ -355,7 +435,7 @@ const ItineraryPage = () => {
                                 <div className="mb-6">
                                     <div className="flex items-center gap-3 mb-1.5">
                                         <Calendar className="w-4 h-4 text-blue-500" />
-                                        <span className="text-xs font-bold text-blue-500 uppercase tracking-wider">{currentDayData.date}</span>
+                                        <span className="text-xs font-bold text-blue-500 uppercase tracking-wider">{currentDayData.date || `Day ${currentDayData.dayNumber}`}</span>
                                     </div>
                                     <h3 className="text-xl font-bold text-slate-900">{currentDayData.weatherNote}</h3>
                                 </div>
@@ -368,7 +448,8 @@ const ItineraryPage = () => {
                                             index={index}
                                             total={currentDayData.places.length}
                                             onLocate={handleLocate}
-                                            currency={currency}
+                                            sourceCurrencyCode={sourceCurrencyCode}
+                                            targetCurrencyCode={targetCurrency}
                                         />
                                     ))}
                                 </div>
@@ -381,12 +462,12 @@ const ItineraryPage = () => {
                                 center={mapCenter}
                                 zoom={mapZoom}
                                 scrollWheelZoom={true}
-                                style={{ height: '600px', width: '100%', zIndex: 1, position: 'relative' }}
-                                className="h-full w-full z-10 overflow-hidden rounded-3xl"
+                                style={{ height: '100%', minHeight: '600px', width: '100%', zIndex: 0 }}
+                                className="h-full w-full outline-none"
                             >
                                 <TileLayer
-                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                                    url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                                    url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                                 />
                                 <ForceResize center={mapCenter} zoom={mapZoom} />
 
@@ -458,7 +539,9 @@ const ItineraryPage = () => {
                                                                     </div>
                                                                 </div>
                                                                 <p className="text-[10px] text-slate-500 truncate">{hotel.vibe || hotel.description}</p>
-                                                                <span className="text-xs font-black text-indigo-600 mt-0.5 block">{hotel.price}</span>
+                                                                <span className="text-xs font-black text-indigo-600 mt-0.5 block">
+                                                                    <PriceDisplay amount={hotel.price} sourceCode={sourceCurrencyCode} targetCode={targetCurrency} />
+                                                                </span>
                                                             </div>
                                                         </div>
 

@@ -21,7 +21,7 @@ def chat_with_assistant(user_message, trip_context=None):
 
     try:
         response = client.models.generate_content(
-            model='gemini-2.0-flash',
+            model='gemini-flash-latest',
             contents=user_message,
             config=types.GenerateContentConfig(
                 system_instruction=system_prompt
@@ -33,8 +33,5 @@ def chat_with_assistant(user_message, trip_context=None):
     except Exception as e:
         print(f"Assistant Gemini Error: {e}")
 
-    return {"reply": "I'm having trouble connecting to my travel brain right now. Please try again in a moment!"}
-
-    return {"reply": "I'm having trouble connecting to my travel brain right now. Please try again in a moment!"}
 
     return {"reply": "I'm having trouble connecting to my travel brain right now. Please try again in a moment!"}

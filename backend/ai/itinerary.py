@@ -87,7 +87,7 @@ def repair_json(json_str):
         
     return repaired
 
-def build_itinerary_prompt(trip, places, weather, currency_symbol="₹"):
+def build_itinerary_prompt(trip, places, weather, currency_symbol="₹", language="English"):
     places_str = json.dumps(places, indent=2)
     weather_str = json.dumps(weather, indent=2)
     duration = trip.get('days', 3)
@@ -98,7 +98,7 @@ def build_itinerary_prompt(trip, places, weather, currency_symbol="₹"):
     interests = ", ".join([str(i) for i in trip.get('interests', [])])
     return f"""
 You are 'Journey360 AI', a premium, highly precise travel consultant. 
-Your goal is to create a masterpiece {duration}-day itinerary. 
+Your goal is to create a masterpiece {duration}-day itinerary in {language}. 
 
 CRITICAL REQUIREMENT: 
 You MUST generate exactly {duration} days of activities. Each day must be a separate object in the "days" array. 
@@ -360,39 +360,41 @@ def call_llm(prompt, trip):
     if os.getenv("MOCK_AI") == "true" or os.getenv("OFFLINE_MODE") == "true":
         return get_mock_itinerary(trip, real_hotels=trip.get("_real_hotels"), real_restaurants=trip.get("_real_restaurants"), real_attractions=trip.get("_real_attractions"))
 
-    # Multi-layered fallback strategy
-    # For long trips (> 5 days), prioritize Gemini 2.0 Flash for its large output context
     default_models = [
-        "meta-llama/llama-3.3-70b-instruct:free", # (FREE) High reliability & unlimited credits
-        "openai/gpt-4o-mini",          # (Pay-as-you-go) Fast & Accurate
-        "google/gemini-2.0-flash-001", # (Pay-as-you-go) Great reasoning
-        "google/gemini-2.0-flash"      # (FREE/Rate-limited) Final backup
+        "google/gemini-flash-latest",          # (FREE) High Quota (1.5 Flash alias)
+        "google/gemini-pro-latest",            # (FREE) High Intelligence (1.5 Pro alias)
+        "google/gemini-2.0-flash-lite",        # (FREE) Backup
+        "google/gemini-2.0-flash",             # (FREE) Backup
     ]
 
     duration = trip.get('days', 3)
-    if duration > 5:
-        # Prioritize Gemini for long context generation
-        models = ["google/gemini-2.0-flash"] + [m for m in default_models if m != "google/gemini-2.0-flash"]
-    else:
-        models = default_models
+    models = default_models
     
     max_retries = 3
-    retry_delay = 5
+    retry_delay = 2 # Faster retries
 
     for attempt in range(max_retries):
         for model_name in models:
             try:
                 log(f"Sending request to {model_name} - Attempt {attempt + 1}...")
                 
-                if "gemini-2.0-flash" in model_name:
+                if "gemini" in model_name and "google" in model_name:
                     # Use Google Gen AI SDK directly
-                    # Map to the specific model ID expected by Google
-                    google_model_id = "gemini-2.0-flash-exp" 
+                    # clean model name: "google/gemini-1.5-flash" -> "gemini-1.5-flash"
+                    google_model_id = model_name.replace("google/", "")
                     
                     response = client.models.generate_content(
                         model=google_model_id,
                         contents=prompt,
-                        config=types.GenerateContentConfig(temperature=0.7)
+                        config=types.GenerateContentConfig(
+                            temperature=0.7,
+                            safety_settings=[
+                                {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+                                {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+                                {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+                                {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"}
+                            ]
+                        )
                     )
                     res_text = response.text if response.text else None
                 else:
@@ -432,10 +434,14 @@ def call_llm(prompt, trip):
                 if "data policy" in err_str:
                     log("CRITICAL: OpenRouter requires 'Free model publication' to be enabled.")
                 
-                if "429" in err_str or "quota" in err_str.lower():
-                    log(f"Quota issue with {model_name}. Jumping to next...")
+                if any(x in err_str.lower() for x in ["429", "quota", "resource_exhausted", "capacity", "limit"]):
+                    log(f"Quota/Limit issue with {model_name}. Jumping to next immediately...")
                     continue # Try the next model immediately
                 
+                if any(x in err_str.lower() for x in ["connection", "timeout", "503", "502"]):
+                    log(f"Network issue with {model_name}. Jumping to next immediately...")
+                    continue
+
                 # For other errors, we might want to try the next model too
                 continue
 
@@ -448,10 +454,66 @@ def call_llm(prompt, trip):
             log("Final attempt failed for all models.")
             raise Exception("AI orchestration failed: All providers returned errors.")
 
+            raise Exception("AI orchestration failed: All providers returned errors.")
+
+def find_cached_itinerary(destination, days, budget_level=None):
+    if itineraries_collection is None:
+        return None
+        
+    print(f"DEBUG: Checking cache for {destination} ({days} days)...", flush=True)
+    
+    # query for case-insensitive destination and array size match
+    query = {
+        "destination": {"$regex": f"^{destination}$", "$options": "i"},
+        "days": {"$size": days},
+        "generatedFrom": "initial" # Only reuse initial generations, not regenerations which might be very specific
+    }
+    
+    # If we saved budget_level in the past, use it. But for now, let's be lenient.
+    # We prioritize the most recent one.
+    cached = itineraries_collection.find_one(query, sort=[("createdAt", -1)])
+    
+    if cached:
+        print(f"DEBUG: Cache HIT! Found itinerary {cached.get('itineraryId')}", flush=True)
+    else:
+        print("DEBUG: Cache MISS.", flush=True)
+        
+    return cached
+
 def generate_itinerary(trip):
     # Sanitizer: Fix common misspellings early
     trip["destination"] = trip["destination"].replace("Kolkatta", "Kolkata").replace("Banglore", "Bengaluru").replace("kerela", "Kerala").replace("Kerela", "Kerala")
+    dest = trip["destination"]
+    duration = trip.get("days", 3)
     
+    # 1. OPTIMIZATION: Check Cache First
+    # Skip cache if we are in a special mode or User explicitly requested a fresh one (handled via API usually, but here we default to cache)
+    cached_itinerary = find_cached_itinerary(dest, duration)
+    
+    if cached_itinerary:
+        # Clone and return
+        new_id = str(uuid.uuid4())
+        print(f"DEBUG: Reusing cached itinerary. New ID: {new_id}", flush=True)
+        
+        # We must clone it thoroughly
+        cached_itinerary["_id"] = new_id # valid for python dict to act as mongo insert
+        cached_itinerary["itineraryId"] = new_id
+        cached_itinerary["tripId"] = trip["trip_id"]
+        cached_itinerary["userId"] = trip["user_id"]
+        cached_itinerary["createdAt"] = datetime.now(timezone.utc).isoformat()
+        cached_itinerary["updatedAt"] = datetime.now(timezone.utc).isoformat()
+        cached_itinerary["isCachedResult"] = True
+        
+        # Save this "new" instance to DB so the user owns it
+        if itineraries_collection is not None:
+            # We need to ensure we don't carry over the old _id from mongo find
+            save_data = cached_itinerary.copy()
+            if "_id" in save_data: del save_data["_id"]
+            itineraries_collection.insert_one(save_data)
+            
+        if "_id" in cached_itinerary: del cached_itinerary["_id"]
+        return cached_itinerary
+
     print(f"\n>>> ITINERARY GENERATION ENGINE V2.2 <<<", flush=True)
     print(f"STARTING ITINERARY GENERATION for {trip['destination']} ({trip.get('days', '?')} days)", flush=True)
     
@@ -484,7 +546,6 @@ def generate_itinerary(trip):
     check_in = trip.get("start_date")
     check_out = trip.get("end_date")
     
-    from datetime import timezone
     now_utc = datetime.now(timezone.utc)
     
     # ... date normalization logic ...
@@ -557,19 +618,47 @@ def generate_itinerary(trip):
                 "lng": res.get("lng")
             })
     
-    # Currency (Hardcoded to INR)
+    # Fetch User Preferences
     currency_symbol = DEFAULT_CURRENCY_SYMBOL
     currency_code = DEFAULT_CURRENCY_CODE
+    language = "English"
+
+    if itineraries_collection is not None:
+         # Try to find user preferences
+         try:
+             from backend.database.db import users_collection
+             user = users_collection.find_one({"uid": trip.get("user_id")})
+             if user and user.get("preferences"):
+                 prefs = user.get("preferences")
+                 
+                 # Currency
+                 curr_pref = prefs.get("currency", "INR")
+                 if curr_pref == "USD":
+                     currency_symbol = "$"
+                     currency_code = "USD"
+                 elif curr_pref == "EUR":
+                     currency_symbol = "€"
+                     currency_code = "EUR"
+                 
+                 # Language
+                 language = prefs.get("language", "English")
+                 print(f"DEBUG: Using User Prefs -> Currency: {currency_code}, Lang: {language}", flush=True)
+         except Exception as e:
+             print(f"DEBUG: Failed to load user prefs: {e}")
 
     weather = get_weather(trip["destination"])
-    prompt = build_itinerary_prompt(trip, prompt_places, weather, currency_symbol=currency_symbol)
+    prompt = build_itinerary_prompt(trip, prompt_places, weather, currency_symbol=currency_symbol, language=language)
     
     # Attach real data to trip object temporarily for mock fallback access
     trip["_real_hotels"] = real_hotels
     trip["_real_restaurants"] = real_restaurants
     trip["_real_attractions"] = real_attractions
     
-    raw_itinerary = call_llm(prompt, trip)
+    try:
+        raw_itinerary = call_llm(prompt, trip)
+    except Exception as e:
+        print(f"CRITICAL: AI Generation failed ({e}). Falling back to Mock Engine.", flush=True)
+        raw_itinerary = get_mock_itinerary(trip, note="Fallback due to AI Error", real_hotels=real_hotels, real_restaurants=real_restaurants, real_attractions=real_attractions)
     
     # ---------------------------------------------------------
     # MASTER UNIQUENESS FILTER: Remove duplicate places by name
@@ -611,6 +700,46 @@ def generate_itinerary(trip):
         filtered_days.append(day)
     
     raw_itinerary["days"] = filtered_days
+
+    # ---------------------------------------------------------
+    # COORDINATE REPAIR: Ensure all places have valid Lat/Lng
+    # ---------------------------------------------------------
+    print("DEBUG: Verifying coordinates for all places...", flush=True)
+    for day in raw_itinerary.get("days", []):
+        for place in day.get("places", []):
+            try:
+                # If lat/lng are 0, missing, or look like defaults, try to repair
+                p_lat = place.get("lat")
+                p_lng = place.get("lng")
+                name = place.get("name")
+                
+                needs_repair = False
+                if not p_lat or not p_lng: needs_repair = True
+                if p_lat == 0 and p_lng == 0: needs_repair = True
+                
+                # If repair needed and we have a name
+                if needs_repair and name and "Explore" not in name:
+                    # Construct search query: "Place Name, Destination"
+                    query = f"{name}, {trip['destination']}"
+                    print(f"DEBUG: Repairing coords for '{query}'...", flush=True)
+                    new_lat, new_lng = get_coordinates(query)
+                    
+                    if new_lat and new_lng:
+                        place["lat"] = new_lat
+                        place["lng"] = new_lng
+                        print(f"DEBUG: Repaired -> {new_lat}, {new_lng}")
+                    else:
+                        # Fallback to destination center if specific place fails
+                        # This prevents 0,0 ocean view
+                        dest_lat, dest_lng = get_coordinates(trip['destination'])
+                        if dest_lat:
+                             place["lat"] = dest_lat
+                             place["lng"] = dest_lng
+                             print(f"DEBUG: Fallback to City Center -> {dest_lat}, {dest_lng}")
+
+            except Exception as e:
+                print(f"DEBUG: Coord repair failed for {place.get('name')}: {e}")
+
     
     # Verification: Ensure AI didn't skip days
     generated_days = raw_itinerary.get("days", [])
@@ -642,7 +771,7 @@ def generate_itinerary(trip):
             })
     
     # Enrich with cost summary and metadata
-    cost_summary = calculate_costs(raw_itinerary.get("days", []))
+    cost_summary = calculate_costs(raw_itinerary.get("days", []), currency_symbol=currency_symbol)
     
     # FORCE REAL HOTELS: Always prioritize SerpApi results over AI or Mock data
     if real_hotels:
@@ -697,7 +826,10 @@ def generate_itinerary(trip):
         "generatedFrom": "initial",
         "lastPromptUsed": prompt,
         "createdAt": datetime.now(timezone.utc),
-        "updatedAt": datetime.now(timezone.utc)
+        "updatedAt": datetime.now(timezone.utc),
+        # Metadata for caching
+        "budgetLevel": trip.get("budget_level"),
+        "interests": trip.get("interests", [])
     }
     
     # Save to dedicated collection

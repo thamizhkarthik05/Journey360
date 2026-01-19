@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth } from '../../services/firebase';
 import { apiService } from '../../services/apiService';
 
-const AITripCreator = () => {
+const AITripCreator = ({ initialData }) => {
     const navigate = useNavigate();
     const [destination, setDestination] = useState('');
     const [startDate, setStartDate] = useState('');
@@ -14,6 +14,28 @@ const AITripCreator = () => {
     const [selectedInterests, setSelectedInterests] = useState([]);
     const [customInterest, setCustomInterest] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // Update local state AND auto-generate when prop changes
+    React.useEffect(() => {
+        if (initialData) {
+            const dest = initialData.name.split(',')[0];
+            setDestination(dest);
+            if (initialData.budget) setBudget(initialData.budget);
+            if (initialData.pace) setPace(initialData.pace);
+            if (initialData.interests) setSelectedInterests(initialData.interests);
+
+            // Auto-Generate directly using the passed data (plus defaults)
+            executeGeneration({
+                destination: dest,
+                budget: initialData.budget || 50,
+                pace: initialData.pace || 'Balanced',
+                interests: initialData.interests || [],
+                // Default to 3 days from tomorrow for quick suggestions
+                start_date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
+                end_date: new Date(Date.now() + 4 * 86400000).toISOString().split('T')[0]
+            });
+        }
+    }, [initialData]);
 
     const interests = [
         { id: 'adventure', label: 'Adventure', icon: '🏃' },
@@ -29,30 +51,22 @@ const AITripCreator = () => {
         );
     };
 
-    const handleGenerate = async () => {
+    const executeGeneration = async (data) => {
         if (!auth.currentUser) return alert("Please login first");
-        if (!destination) return alert("Please enter a destination");
 
         setLoading(true);
         try {
-            // 1. Create Trip
-            const combinedInterests = [...selectedInterests];
-            if (customInterest.trim()) combinedInterests.push(customInterest.trim());
-
             const tripData = {
-                destination,
-                budget: parseInt(budget) * 2000, // Mapping 0-100 scale to ₹0-₹2,00,000 range
-                interests: combinedInterests.length > 0 ? combinedInterests : ['General'],
-                travel_pace: pace,
-                start_date: startDate || new Date().toISOString().split('T')[0],
-                end_date: endDate || new Date().toISOString().split('T')[0],
+                destination: data.destination,
+                budget: parseInt(data.budget) * 2000,
+                interests: data.interests.length > 0 ? data.interests : ['General'],
+                travel_pace: data.pace,
+                start_date: data.start_date || new Date().toISOString().split('T')[0],
+                end_date: data.end_date || new Date().toISOString().split('T')[0],
             };
+
             const newTrip = await apiService.createTrip(auth, tripData);
-
-            // 2. Generate Itinerary
             await apiService.generateItinerary(auth, newTrip.trip_id);
-
-            // 3. Navigate
             navigate(`/itinerary?trip_id=${newTrip.trip_id}`);
         } catch (error) {
             console.error("Generation Error:", error);
@@ -60,6 +74,20 @@ const AITripCreator = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleManualGenerate = () => {
+        const combinedInterests = [...selectedInterests];
+        if (customInterest.trim()) combinedInterests.push(customInterest.trim());
+
+        executeGeneration({
+            destination,
+            budget,
+            pace,
+            interests: combinedInterests,
+            start_date: startDate,
+            end_date: endDate
+        });
     };
 
     return (
@@ -182,7 +210,7 @@ const AITripCreator = () => {
 
                 {/* Generate Button */}
                 <button
-                    onClick={handleGenerate}
+                    onClick={handleManualGenerate}
                     disabled={loading}
                     className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white py-3.5 rounded-xl font-semibold shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-70"
                 >

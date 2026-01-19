@@ -68,9 +68,12 @@ def test_auth(user=Depends(get_current_user)):
 try:
     from backend.trips.routes import router as trips_router
     from backend.ai.routes import router as ai_router
+    from backend.users.routes import router as users_router
 except ImportError:
     from trips.routes import router as trips_router
     from ai.routes import router as ai_router
+    from users.routes import router as users_router
 
 app.include_router(trips_router, tags=["Trips"])
 app.include_router(ai_router, tags=["AI"])
+app.include_router(users_router, tags=["Users"])
