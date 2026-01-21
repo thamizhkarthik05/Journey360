@@ -8,6 +8,7 @@ import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { auth } from '../../services/firebase';
 import { apiService } from '../../services/apiService';
 import AppLayout from '../../components/layout/AppLayout';
+import ARViewer from '../../components/navigation/ARViewer';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
@@ -52,7 +53,7 @@ const ForceResize = ({ center, zoom }) => {
 };
 
 // Component to automatically open popup when position/label changes
-const AutoPopupMarker = ({ position, label, bookingUrl, timestamp }) => {
+const AutoPopupMarker = ({ position, label, bookingUrl, timestamp, onLaunchAR }) => {
     const markerRef = useRef(null);
     useEffect(() => {
         if (markerRef.current) {
@@ -65,17 +66,29 @@ const AutoPopupMarker = ({ position, label, bookingUrl, timestamp }) => {
             <Popup>
                 <div className="p-1 min-w-[150px]">
                     <h4 className="font-bold text-sm mb-1">{label}</h4>
-                    {bookingUrl && (
-                        <a
-                            href={bookingUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
+                    <div className="flex flex-col gap-2">
+                        {bookingUrl && (
+                            <a
+                                href={bookingUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
+                            >
+                                <ExternalLink size={10} />
+                                Book Now
+                            </a>
+                        )}
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onLaunchAR && onLaunchAR({ name: label, lat: position[0], lng: position[1] });
+                            }}
+                            className="w-full py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg flex items-center justify-center gap-1.5 hover:bg-blue-700 transition-colors"
                         >
-                            <ExternalLink size={10} />
-                            Book Now
-                        </a>
-                    )}
+                            <Sparkles size={10} />
+                            Launch AR
+                        </button>
+                    </div>
                 </div>
             </Popup>
         </Marker>
@@ -139,7 +152,7 @@ const PriceDisplay = ({ amount, sourceCode = 'INR', targetCode = 'INR', classNam
     );
 };
 
-const TimelineEvent = ({ event, index, total, onLocate, sourceCurrencyCode, targetCurrencyCode }) => {
+const TimelineEvent = ({ event, index, total, onLocate, onLaunchAR, sourceCurrencyCode, targetCurrencyCode }) => {
     const isHotel = event.category?.toLowerCase() === 'hotel';
 
     return (
@@ -203,31 +216,44 @@ const TimelineEvent = ({ event, index, total, onLocate, sourceCurrencyCode, targ
                             )}
                         </div>
 
-                        {isHotel && (
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        const url = event.bookingUrl || `https://www.google.com/search?q=${encodeURIComponent(event.name + ' booking')}`;
-                                        window.open(url, '_blank');
-                                    }}
-                                    className="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg shadow-sm transition-all flex items-center gap-1.5"
-                                >
-                                    <ExternalLink size={12} />
-                                    Book Now
-                                </button>
+                        <div className="flex gap-2">
+                            {isHotel ? (
+                                <>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            const url = event.bookingUrl || `https://www.google.com/search?q=${encodeURIComponent(event.name + ' booking')}`;
+                                            window.open(url, '_blank');
+                                        }}
+                                        className="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg shadow-sm transition-all flex items-center gap-1.5"
+                                    >
+                                        <ExternalLink size={12} />
+                                        Book Now
+                                    </button>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            onLocate && onLocate(event);
+                                        }}
+                                        className="text-xs font-bold text-indigo-600 bg-white border border-indigo-100 px-3 py-1.5 rounded-lg shadow-sm hover:bg-indigo-50 transition-all flex items-center gap-1.5"
+                                    >
+                                        <MapIcon size={12} />
+                                        Locate
+                                    </button>
+                                </>
+                            ) : (
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         onLocate && onLocate(event);
                                     }}
-                                    className="text-xs font-bold text-indigo-600 bg-white border border-indigo-100 px-3 py-1.5 rounded-lg shadow-sm hover:bg-indigo-50 transition-all flex items-center gap-1.5"
+                                    className="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-lg shadow-sm hover:bg-blue-100 transition-all flex items-center gap-1.5"
                                 >
                                     <MapIcon size={12} />
                                     Locate
                                 </button>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -246,6 +272,9 @@ const ItineraryPage = () => {
     const [mapCenter, setMapCenter] = useState([20, 0]);
     const [mapZoom, setMapZoom] = useState(2);
     const [showHotels, setShowHotels] = useState(true);
+
+    // AR State
+    const [activeAR, setActiveAR] = useState(null);
 
     // User Preference State
     const [targetCurrency, setTargetCurrency] = useState('INR');
@@ -319,6 +348,18 @@ const ItineraryPage = () => {
                 setMapCenter([itinerary.topHotels[0].lat, itinerary.topHotels[0].lng]);
                 setMapZoom(13);
             }
+        }
+    };
+
+    const handleLaunchAR = (place) => {
+        if (place.lat && place.lng) {
+            setActiveAR({
+                name: place.name || place.label,
+                lat: parseFloat(place.lat),
+                lng: parseFloat(place.lng)
+            });
+        } else {
+            alert("This location does not have coordinates for AR navigation.");
         }
     };
 
@@ -448,6 +489,7 @@ const ItineraryPage = () => {
                                             index={index}
                                             total={currentDayData.places.length}
                                             onLocate={handleLocate}
+                                            onLaunchAR={handleLaunchAR}
                                             sourceCurrencyCode={sourceCurrencyCode}
                                             targetCurrencyCode={targetCurrency}
                                         />
@@ -478,9 +520,19 @@ const ItineraryPage = () => {
                                             position={[place.lat, place.lng]}
                                         >
                                             <Popup>
-                                                <div className="p-1">
-                                                    <p className="font-bold text-xs">{place.name}</p>
-                                                    <p className="text-[10px] text-slate-500">{place.timeSlot}</p>
+                                                <div className="p-1 min-w-[120px]">
+                                                    <p className="font-bold text-sm mb-1">{place.name}</p>
+                                                    <p className="text-[10px] text-slate-500 mb-2">{place.timeSlot}</p>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleLaunchAR(place);
+                                                        }}
+                                                        className="w-full py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg flex items-center justify-center gap-1.5 hover:bg-blue-700 transition-colors"
+                                                    >
+                                                        <Sparkles size={10} />
+                                                        Launch AR
+                                                    </button>
                                                 </div>
                                             </Popup>
                                         </Marker>
@@ -493,6 +545,7 @@ const ItineraryPage = () => {
                                         label={mapMarker.label}
                                         bookingUrl={mapMarker.bookingUrl}
                                         timestamp={mapMarker.timestamp}
+                                        onLaunchAR={handleLaunchAR}
                                     />
                                 )}
                             </MapContainer>
@@ -580,6 +633,14 @@ const ItineraryPage = () => {
                     </div>
                 </main>
             </div>
+
+            {/* AR Overlay */}
+            {activeAR && (
+                <ARViewer
+                    destination={activeAR}
+                    onClose={() => setActiveAR(null)}
+                />
+            )}
         </AppLayout>
     );
 };
