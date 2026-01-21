@@ -1,37 +1,27 @@
-import os
-import json
-from google import genai
-from google.genai import types
-from dotenv import load_dotenv
+from fastapi import APIRouter, Query
+from services.news_service import get_safety_news
+from services.risk_engine import calculate_risk
+from services.emergency_service import get_emergency_numbers
 
-load_dotenv()
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+router = APIRouter(prefix="/ai/safety", tags=["Safety"])
 
-def assess_safety(location, weather_data=None):
-    gemini_key = os.getenv("GEMINI_API_KEY")
-    if not gemini_key:
-        return {"level": "Unknown", "advice": "Gemini API key not configured."}
+@router.get("/risk")
+def assess_safety(location: str = Query(...)):
+    news = get_safety_news(location)
+    risk = calculate_risk(news)
 
-    prompt = f"Analyze the safety and travel risks for {location}."
-    if weather_data:
-        prompt += f" Current weather context: {weather_data}."
-    
-    prompt += " Provide a safety level (Low/Medium/High Risk) and brief advice. Return as RAW JSON: {\"level\": \"...\", \"advice\": \"...\"}"
+    alerts = [
+        n for n in news if n["severity"] == "High"
+    ]
 
-    try:
-        response = client.models.generate_content(
-            model='gemini-2.0-flash',
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                system_instruction="You are a travel safety expert. Provide specific, actionable safety advice. Respond with RAW JSON only."
-            )
+    return {
+        "location": location,
+        "risk": risk,
+        "news": news,              # EXACTLY 5
+        "alerts": alerts,          # High severity only
+        "emergency": get_emergency_numbers(location),
+        "ai_insight": (
+            f"{risk['level']} risk detected based on "
+            f"{len(alerts)} high-severity incidents in the last 48 hours."
         )
-        
-        if response.text:
-            return json.loads(response.text.strip())
-    except Exception as e:
-        print(f"Safety Gemini Error: {e}")
-
-    return {"level": "Unknown", "advice": "Safety data temporarily unavailable. Please exercise standard caution."}
-
-    return {"level": "Unknown", "advice": "Safety data temporarily unavailable. Please exercise standard caution."}
+    }

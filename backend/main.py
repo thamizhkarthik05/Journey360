@@ -77,3 +77,9 @@ except ImportError:
 app.include_router(trips_router, tags=["Trips"])
 app.include_router(ai_router, tags=["AI"])
 app.include_router(users_router, tags=["Users"])
+from backend.services.news_service import get_safety_news
+from fastapi import Query
+@app.get("/ai/safety/risk")
+def safety_risk(location: str = Query(...)):
+    articles = get_safety_news(location)
+    return {"location": location, "articles": articles}

@@ -88,7 +88,7 @@ const Contact = () => {
                             </div>
                             <h3 className="text-lg font-bold text-slate-900 mb-2">Visit Us</h3>
                             <p className="text-slate-500 text-sm mb-4">Come say hello at our HQ.</p>
-                            <p className="text-slate-900 font-medium text-sm">100 Innovation Dr,<br />San Francisco, CA 94016</p>
+                            <p className="text-slate-900 font-medium text-sm">SJT,<br />VIT-Vellore, Vellore 632014</p>
                         </div>
 
                         {/* Card 3 */}
@@ -97,8 +97,9 @@ const Contact = () => {
                                 <Phone size={24} />
                             </div>
                             <h3 className="text-lg font-bold text-slate-900 mb-2">Call Us</h3>
-                            <p className="text-slate-500 text-sm mb-4">Mon-Fri from 8am to 5pm.</p>
-                            <p className="text-slate-900 font-bold text-sm">+1 (555) 000-0000</p>
+                            <p className="text-slate-500 text-sm mb-4">Mon-Fri from 10am to 2pm.</p>
+                            <p className="text-slate-900 font-bold text-sm">+91 6362337992</p>
+                            <p className="text-slate-900 font-bold text-sm">+91 7094953929</p>
                         </div>
                     </div>
 
@@ -121,7 +122,7 @@ const Contact = () => {
                                                 value={formState.name}
                                                 onChange={handleChange}
                                                 className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-300"
-                                                placeholder="John Doe"
+                                                placeholder="Michelle Paul"
                                             />
                                         </div>
                                         <div>
@@ -133,7 +134,7 @@ const Contact = () => {
                                                 value={formState.email}
                                                 onChange={handleChange}
                                                 className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-300"
-                                                placeholder="john@example.com"
+                                                placeholder="Mike@example.com"
                                             />
                                         </div>
                                     </div>
