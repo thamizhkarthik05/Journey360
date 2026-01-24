@@ -95,14 +95,14 @@ const SafetyPage = () => {
                             <input
                                 type="text"
                                 placeholder="Search location..."
-                                className="border rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-blue-100 outline-none w-full md:w-64"
+                                className="border rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-emerald-100 outline-none w-full md:w-64"
                                 value={location}
                                 onChange={e => setLocation(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && fetchSafety(location)}
                             />
                             <button
                                 onClick={() => fetchSafety(location)}
-                                className="bg-blue-600 text-white p-2 rounded-xl hover:bg-blue-700 transition-all"
+                                className="bg-emerald-600 text-white p-2 rounded-xl hover:bg-emerald-700 transition-all"
                             >
                                 <Search size={20} />
                             </button>
@@ -111,7 +111,7 @@ const SafetyPage = () => {
 
                     {loading ? (
                         <div className="flex justify-center py-20">
-                            <Loader2 className="animate-spin text-blue-600" size={48} />
+                            <Loader2 className="animate-spin text-emerald-600" size={48} />
                         </div>
                     ) : assessment ? (
                         <>
@@ -123,10 +123,10 @@ const SafetyPage = () => {
                                     description={assessment.risk?.reason || assessment.advice}
                                 />
 
-                                <div className="bg-blue-50/50 p-6 rounded-3xl border border-blue-100 flex flex-col justify-between">
+                                <div className="bg-emerald-50/50 p-6 rounded-3xl border border-emerald-100 flex flex-col justify-between">
                                     <div className="flex justify-between items-start mb-4">
-                                        <h3 className="text-xs font-bold text-blue-600 tracking-wider uppercase">EMERGENCY NUMBER</h3>
-                                        <div className="text-blue-500">
+                                        <h3 className="text-xs font-bold text-emerald-600 tracking-wider uppercase">EMERGENCY NUMBER</h3>
+                                        <div className="text-emerald-500">
                                             <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                             </svg>
@@ -136,14 +136,14 @@ const SafetyPage = () => {
                                         <div className="text-4xl font-bold text-slate-900 mb-1">
                                             {assessment.emergency?.primary?.number || "112"}
                                         </div>
-                                        <p className="text-blue-600 text-sm font-medium">
+                                        <p className="text-emerald-600 text-sm font-medium">
                                             {assessment.emergency?.primary?.label || "Local Emergency"}
                                         </p>
                                     </div>
                                     {assessment.emergency?.primary?.callable && (
                                         <a
                                             href={assessment.emergency.primary.tel}
-                                            className="mt-4 inline-block text-sm font-semibold text-blue-700 hover:underline"
+                                            className="mt-4 inline-block text-sm font-semibold text-emerald-700 hover:underline"
                                         >
                                             Call now &rarr;
                                         </a>
@@ -161,7 +161,7 @@ const SafetyPage = () => {
                             {assessment.news && assessment.news.length > 0 && (
                                 <div className="mb-10">
                                     <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                                        <Bell size={20} className="text-blue-600" />
+                                        <Bell size={20} className="text-emerald-600" />
                                         Real-time Local Alerts
                                     </h3>
                                     <div className="flex flex-col gap-3">
@@ -208,9 +208,9 @@ const SafetyPage = () => {
 
                             <AlertList alerts={assessment.alerts || []} />
 
-                            <div className="mt-10 bg-blue-50/50 rounded-3xl p-8 border border-blue-100/50">
+                            <div className="mt-10 bg-emerald-50/50 rounded-3xl p-8 border border-emerald-100/50">
                                 <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white">
+                                    <div className="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white">
                                         <span className="font-bold">AI</span>
                                     </div>
                                     <h3 className="text-base font-bold text-slate-900">Journey360 AI Insight</h3>

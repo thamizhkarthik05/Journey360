@@ -23,7 +23,7 @@ const DashboardNavbar = () => {
             <div className="flex items-center">
                 {/* Logo */}
                 <Link to="/dashboard" className="flex items-center gap-2 cursor-pointer">
-                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center rotate-45">
+                    <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center rotate-45">
                         <div className="w-4 h-4 bg-white dark:bg-slate-900 rotate-45"></div>
                     </div>
                     <span className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">Journey360</span>
@@ -31,10 +31,10 @@ const DashboardNavbar = () => {
 
                 {/* Nav Links */}
                 <nav className="hidden md:flex items-center gap-8 text-gray-600 dark:text-gray-400 font-medium text-sm ml-8">
-                    <Link to="/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Home</Link>
-                    <Link to="/about" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</Link>
-                    <Link to="/services" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Services</Link>
-                    <Link to="/contact" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact</Link>
+                    <Link to="/dashboard" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Home</Link>
+                    <Link to="/about" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">About</Link>
+                    <Link to="/services" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Services</Link>
+                    <Link to="/contact" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Contact</Link>
                 </nav>
             </div>
 
@@ -72,7 +72,7 @@ const DashboardNavbar = () => {
                         <img
                             src={userAvatar}
                             alt="Profile"
-                            className="w-9 h-9 rounded-full border border-gray-200 cursor-pointer hover:ring-2 hover:ring-blue-500 transition-all"
+                            className="w-9 h-9 rounded-full border border-gray-200 cursor-pointer hover:ring-2 hover:ring-emerald-500 transition-all"
                         />
                     </Link>
                     <button

@@ -52,7 +52,7 @@ const MyTripsPage = () => {
                         </div>
                         <button
                             onClick={() => navigate('/dashboard')}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-blue-500/20"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-emerald-500/20"
                         >
                             <Plus size={20} />
                             Plan New Trip
@@ -68,7 +68,7 @@ const MyTripsPage = () => {
                                 placeholder="Search by destination..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all font-medium"
+                                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-100 transition-all font-medium"
                             />
                         </div>
                         <div className="flex items-center gap-6 px-4 border-l border-slate-100 hidden md:flex">
@@ -81,7 +81,7 @@ const MyTripsPage = () => {
 
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
-                            <Loader2 className="animate-spin text-blue-600 mb-4" size={40} />
+                            <Loader2 className="animate-spin text-emerald-600 mb-4" size={40} />
                             <p className="text-slate-500 font-medium">Retrieving your travel history...</p>
                         </div>
                     ) : filteredTrips.length === 0 ? (
@@ -91,7 +91,7 @@ const MyTripsPage = () => {
                             <p className="text-slate-500 mb-8 max-w-xs text-center">Ready to start your next adventure? AI is here to help you plan everything.</p>
                             <button
                                 onClick={() => navigate('/dashboard')}
-                                className="text-blue-600 font-bold hover:underline"
+                                className="text-emerald-600 font-bold hover:underline"
                             >
                                 Create your first trip →
                             </button>
@@ -102,13 +102,13 @@ const MyTripsPage = () => {
                                 <div
                                     key={trip.trip_id}
                                     onClick={() => navigate(`/itinerary?trip_id=${trip.trip_id}`)}
-                                    className="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-100 transition-all cursor-pointer overflow-hidden flex flex-col"
+                                    className="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-100 transition-all cursor-pointer overflow-hidden flex flex-col"
                                 >
-                                    <div className="h-32 bg-gradient-to-br from-blue-600 to-indigo-700 p-6 flex items-start justify-between relative overflow-hidden">
+                                    <div className="h-32 bg-gradient-to-br from-emerald-600 to-teal-700 p-6 flex items-start justify-between relative overflow-hidden">
                                         <MapPin size={60} className="absolute -right-4 -bottom-4 text-white/10 rotate-12" />
                                         <div className="relative z-10">
                                             <h3 className="text-xl font-bold text-white mb-1">{trip.destination}</h3>
-                                            <p className="text-blue-100 text-xs font-medium uppercase tracking-widest">{trip.status}</p>
+                                            <p className="text-emerald-100 text-xs font-medium uppercase tracking-widest">{trip.status}</p>
                                         </div>
                                         <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
                                             <ChevronRight size={20} />

@@ -72,7 +72,7 @@ const AutoPopupMarker = ({ position, label, bookingUrl, timestamp, onLaunchAR })
                                 href={bookingUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1"
+                                className="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1"
                             >
                                 <ExternalLink size={10} />
                                 Book Now
@@ -83,7 +83,7 @@ const AutoPopupMarker = ({ position, label, bookingUrl, timestamp, onLaunchAR })
                                 e.stopPropagation();
                                 onLaunchAR && onLaunchAR({ name: label, lat: position[0], lng: position[1] });
                             }}
-                            className="w-full py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg flex items-center justify-center gap-1.5 hover:bg-blue-700 transition-colors"
+                            className="w-full py-1.5 bg-emerald-600 text-white text-[10px] font-bold rounded-lg flex items-center justify-center gap-1.5 hover:bg-emerald-700 transition-colors"
                         >
                             <Sparkles size={10} />
                             Launch AR
@@ -159,12 +159,12 @@ const TimelineEvent = ({ event, index, total, onLocate, onLaunchAR, sourceCurren
         <div className="flex gap-6 relative group">
             {/* Connector Line */}
             {index !== total - 1 && (
-                <div className="absolute left-[19px] top-10 bottom-[-24px] w-0.5 bg-slate-200 group-hover:bg-blue-100 transition-colors"></div>
+                <div className="absolute left-[19px] top-10 bottom-[-24px] w-0.5 bg-slate-200 group-hover:bg-emerald-100 transition-colors"></div>
             )}
 
             {/* Number Badge */}
             <div className="relative z-10">
-                <div className={`w-10 h-10 rounded-full font-bold flex items-center justify-center text-sm border-2 border-white shadow-sm transition-all duration-300 ${isHotel ? 'bg-indigo-600 text-white' : 'bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white'
+                <div className={`w-10 h-10 rounded-full font-bold flex items-center justify-center text-sm border-2 border-white shadow-sm transition-all duration-300 ${isHotel ? 'bg-teal-600 text-white' : 'bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white'
                     }`}>
                     {isHotel ? '🏨' : index + 1}
                 </div>
@@ -174,13 +174,13 @@ const TimelineEvent = ({ event, index, total, onLocate, onLaunchAR, sourceCurren
             <div className="flex-1 pb-8">
                 <div
                     onClick={() => onLocate && onLocate(event)}
-                    className={`p-5 rounded-3xl border transition-all duration-300 cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] group/card ${isHotel ? 'bg-indigo-50/30 border-indigo-100 hover:border-indigo-300' : 'bg-white border-slate-100 hover:border-blue-200'
+                    className={`p-5 rounded-3xl border transition-all duration-300 cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] group/card ${isHotel ? 'bg-teal-50/30 border-teal-100 hover:border-teal-300' : 'bg-white border-slate-100 hover:border-emerald-200'
                         }`}>
                     <div className="flex justify-between items-start mb-2">
                         <span className="text-sm font-bold text-slate-900">{event.timeSlot}</span>
                         <div className="flex gap-2">
                             {event.category && (
-                                <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-md ${isHotel ? 'bg-indigo-600 text-white' : 'bg-blue-50 text-blue-600'
+                                <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-md ${isHotel ? 'bg-teal-600 text-white' : 'bg-emerald-50 text-emerald-600'
                                     }`}>
                                     {event.category}
                                 </span>
@@ -188,7 +188,7 @@ const TimelineEvent = ({ event, index, total, onLocate, onLaunchAR, sourceCurren
                         </div>
                     </div>
 
-                    <h3 className={`text-lg font-bold mb-2 transition-colors ${isHotel ? 'text-indigo-900 group-hover:text-indigo-600' : 'text-slate-900 group-hover:text-blue-600'
+                    <h3 className={`text-lg font-bold mb-2 transition-colors ${isHotel ? 'text-teal-900 group-hover:text-teal-600' : 'text-slate-900 group-hover:text-emerald-600'
                         }`}>
                         {event.name}
                     </h3>
@@ -225,7 +225,7 @@ const TimelineEvent = ({ event, index, total, onLocate, onLaunchAR, sourceCurren
                                             const url = event.bookingUrl || `https://www.google.com/search?q=${encodeURIComponent(event.name + ' booking')}`;
                                             window.open(url, '_blank');
                                         }}
-                                        className="text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg shadow-sm transition-all flex items-center gap-1.5"
+                                        className="text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 px-3 py-1.5 rounded-lg shadow-sm transition-all flex items-center gap-1.5"
                                     >
                                         <ExternalLink size={12} />
                                         Book Now
@@ -235,7 +235,7 @@ const TimelineEvent = ({ event, index, total, onLocate, onLaunchAR, sourceCurren
                                             e.stopPropagation();
                                             onLocate && onLocate(event);
                                         }}
-                                        className="text-xs font-bold text-indigo-600 bg-white border border-indigo-100 px-3 py-1.5 rounded-lg shadow-sm hover:bg-indigo-50 transition-all flex items-center gap-1.5"
+                                        className="text-xs font-bold text-teal-600 bg-white border border-teal-100 px-3 py-1.5 rounded-lg shadow-sm hover:bg-teal-50 transition-all flex items-center gap-1.5"
                                     >
                                         <MapIcon size={12} />
                                         Locate
@@ -247,7 +247,7 @@ const TimelineEvent = ({ event, index, total, onLocate, onLaunchAR, sourceCurren
                                         e.stopPropagation();
                                         onLocate && onLocate(event);
                                     }}
-                                    className="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-lg shadow-sm hover:bg-blue-100 transition-all flex items-center gap-1.5"
+                                    className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-3 py-1.5 rounded-lg shadow-sm hover:bg-emerald-100 transition-all flex items-center gap-1.5"
                                 >
                                     <MapIcon size={12} />
                                     Locate
@@ -381,7 +381,7 @@ const ItineraryPage = () => {
     if (loading) return (
         <AppLayout>
             <div className="flex items-center justify-center min-h-screen">
-                <Loader2 className="animate-spin text-blue-600" size={48} />
+                <Loader2 className="animate-spin text-emerald-600" size={48} />
             </div>
         </AppLayout>
     );
@@ -405,7 +405,7 @@ const ItineraryPage = () => {
                 <main className="max-w-[1600px] mx-auto p-6 md:p-8">
                     {/* Breadcrumbs */}
                     <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
-                        <Link to="/dashboard" className="hover:text-blue-600 transition-colors">Home</Link>
+                        <Link to="/dashboard" className="hover:text-emerald-600 transition-colors">Home</Link>
                         <ChevronRight className="w-4 h-4 text-slate-300" />
                         <span className="text-slate-900 font-medium">{itinerary.destination}</span>
                     </nav>
@@ -441,7 +441,7 @@ const ItineraryPage = () => {
                             <button
                                 onClick={handleRegenerate}
                                 disabled={regenerating}
-                                className="flex items-center gap-2 px-6 py-3 bg-blue-50 text-blue-600 font-bold rounded-xl border-2 border-blue-100 hover:bg-blue-100 transition-colors whitespace-nowrap disabled:opacity-50"
+                                className="flex items-center gap-2 px-6 py-3 bg-emerald-50 text-emerald-600 font-bold rounded-xl border-2 border-emerald-100 hover:bg-emerald-100 transition-colors whitespace-nowrap disabled:opacity-50"
                             >
                                 {regenerating ? <Loader2 className="animate-spin" size={20} /> : <span className="text-lg">✨</span>}
                                 {regenerating ? 'Updating...' : 'Regenerate with AI'}
@@ -462,7 +462,7 @@ const ItineraryPage = () => {
                                             key={day.dayNumber}
                                             onClick={() => setActiveDay(day.dayNumber)}
                                             className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${activeDay === day.dayNumber
-                                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
+                                                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/30'
                                                 : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
                                                 }`}
                                         >
@@ -475,8 +475,8 @@ const ItineraryPage = () => {
                             <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 flex-1 overflow-y-auto custom-scrollbar">
                                 <div className="mb-6">
                                     <div className="flex items-center gap-3 mb-1.5">
-                                        <Calendar className="w-4 h-4 text-blue-500" />
-                                        <span className="text-xs font-bold text-blue-500 uppercase tracking-wider">{currentDayData.date || `Day ${currentDayData.dayNumber}`}</span>
+                                        <Calendar className="w-4 h-4 text-emerald-500" />
+                                        <span className="text-xs font-bold text-emerald-500 uppercase tracking-wider">{currentDayData.date || `Day ${currentDayData.dayNumber}`}</span>
                                     </div>
                                     <h3 className="text-xl font-bold text-slate-900">{currentDayData.weatherNote}</h3>
                                 </div>
@@ -499,7 +499,7 @@ const ItineraryPage = () => {
                         </div>
 
                         {/* Right: Map */}
-                        <div className="xl:col-span-7 h-full relative group rounded-3xl overflow-hidden border border-slate-200 shadow-lg bg-blue-50/20 min-h-[500px]">
+                        <div className="xl:col-span-7 h-full relative group rounded-3xl overflow-hidden border border-slate-200 shadow-lg bg-emerald-50/20 min-h-[500px]">
                             <MapContainer
                                 center={mapCenter}
                                 zoom={mapZoom}
@@ -528,7 +528,7 @@ const ItineraryPage = () => {
                                                             e.stopPropagation();
                                                             handleLaunchAR(place);
                                                         }}
-                                                        className="w-full py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg flex items-center justify-center gap-1.5 hover:bg-blue-700 transition-colors"
+                                                        className="w-full py-1.5 bg-emerald-600 text-white text-[10px] font-bold rounded-lg flex items-center justify-center gap-1.5 hover:bg-emerald-700 transition-colors"
                                                     >
                                                         <Sparkles size={10} />
                                                         Launch AR
@@ -577,10 +577,10 @@ const ItineraryPage = () => {
                                                     <div
                                                         key={idx}
                                                         onClick={() => handleLocate(hotel)}
-                                                        className="w-full bg-white p-3 rounded-2xl border border-slate-50 shadow-sm flex flex-col gap-3 hover:border-indigo-200 hover:bg-slate-50/50 transition-all cursor-pointer group/hotel"
+                                                        className="w-full bg-white p-3 rounded-2xl border border-slate-50 shadow-sm flex flex-col gap-3 hover:border-teal-200 hover:bg-slate-50/50 transition-all cursor-pointer group/hotel"
                                                     >
                                                         <div className="flex gap-3 items-center">
-                                                            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 text-lg group-hover/hotel:scale-110 transition-transform">
+                                                            <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-teal-600 text-lg group-hover/hotel:scale-110 transition-transform">
                                                                 🏨
                                                             </div>
                                                             <div className="flex-1 min-w-0">
@@ -592,7 +592,7 @@ const ItineraryPage = () => {
                                                                     </div>
                                                                 </div>
                                                                 <p className="text-[10px] text-slate-500 truncate">{hotel.vibe || hotel.description}</p>
-                                                                <span className="text-xs font-black text-indigo-600 mt-0.5 block">
+                                                                <span className="text-xs font-black text-teal-600 mt-0.5 block">
                                                                     <PriceDisplay amount={hotel.price} sourceCode={sourceCurrencyCode} targetCode={targetCurrency} />
                                                                 </span>
                                                             </div>
@@ -605,7 +605,7 @@ const ItineraryPage = () => {
                                                                     const url = hotel.bookingUrl || `https://www.google.com/search?q=${encodeURIComponent(hotel.name + ' ' + itinerary.destination + ' booking')}`;
                                                                     window.open(url, '_blank');
                                                                 }}
-                                                                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-indigo-200"
+                                                                className="flex-1 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 shadow-sm shadow-teal-200"
                                                             >
                                                                 <ExternalLink size={12} />
                                                                 Book Now
@@ -615,7 +615,7 @@ const ItineraryPage = () => {
                                                                     e.stopPropagation();
                                                                     handleLocate(hotel);
                                                                 }}
-                                                                className="flex-1 bg-white border border-slate-100 hover:border-indigo-200 text-slate-600 hover:text-indigo-600 text-xs font-bold py-2 rounded-lg transition-all flex items-center justify-center gap-1.5"
+                                                                className="flex-1 bg-white border border-slate-100 hover:border-teal-200 text-slate-600 hover:text-teal-600 text-xs font-bold py-2 rounded-lg transition-all flex items-center justify-center gap-1.5"
                                                             >
                                                                 <MapIcon size={12} />
                                                                 Locate

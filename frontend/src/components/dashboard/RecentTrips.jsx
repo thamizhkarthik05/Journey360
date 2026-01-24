@@ -37,7 +37,7 @@ const RecentTrips = () => {
 
     if (loading) return (
         <div className="flex justify-center py-10">
-            <Loader2 className="animate-spin text-blue-600" />
+            <Loader2 className="animate-spin text-emerald-600" />
         </div>
     );
 
@@ -49,7 +49,7 @@ const RecentTrips = () => {
                 <h3 className="font-bold text-gray-900 text-lg">My Trips</h3>
                 <button
                     onClick={() => navigate('/my-trips')}
-                    className="text-xs font-bold text-blue-600 hover:underline"
+                    className="text-xs font-bold text-emerald-600 hover:underline"
                 >
                     View All
                 </button>
@@ -61,14 +61,14 @@ const RecentTrips = () => {
                         onClick={() => navigate(`/itinerary?trip_id=${trip.trip_id}`)}
                         className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex gap-4 hover:shadow-md transition-shadow cursor-pointer items-center"
                     >
-                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                        <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
                             <MapPin size={24} />
                         </div>
                         <div className="flex-1">
                             <h4 className="font-bold text-gray-900 text-sm">{trip.destination}</h4>
                             <p className="text-xs text-gray-500 mb-1">{trip.status}</p>
                             <div className="flex items-center gap-1.5">
-                                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wide">
+                                <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wide">
                                     Budget: ₹{trip.budget}
                                 </span>
                             </div>

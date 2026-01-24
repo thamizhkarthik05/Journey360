@@ -28,7 +28,7 @@ const LandingPage = () => {
 
                     <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-tight drop-shadow-lg">
                         Your Journey, <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-indigo-300">Perfectly Planned.</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-300">Perfectly Planned.</span>
                     </h1>
 
                     <p className="text-lg md:text-2xl text-slate-200 mb-10 max-w-2xl mx-auto leading-relaxed font-light">
@@ -38,7 +38,7 @@ const LandingPage = () => {
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                         <button
                             onClick={() => navigate('/signup')}
-                            className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-4 px-10 rounded-full shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-bold py-4 px-10 rounded-full shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1"
                         >
                             Start Planning Free
                         </button>
@@ -70,12 +70,12 @@ const LandingPage = () => {
                     <div className="grid md:grid-cols-3 gap-12">
                         {[
                             {
-                                icon: <Sparkles className="w-8 h-8 text-indigo-600" />,
+                                icon: <Sparkles className="w-8 h-8 text-teal-600" />,
                                 title: "AI Itineraries",
                                 desc: "Tell us where and when, and get a complete day-by-day plan instantly."
                             },
                             {
-                                icon: <Globe className="w-8 h-8 text-blue-600" />,
+                                icon: <Globe className="w-8 h-8 text-emerald-600" />,
                                 title: "Smart Budgeting",
                                 desc: "Real-time cost estimates in your local currency so you never overspend."
                             },
@@ -100,15 +100,15 @@ const LandingPage = () => {
             {/* Social Proof / Stats */}
             <section className="py-20 bg-slate-900 text-white overflow-hidden relative">
                 <div className="absolute top-0 left-0 w-full h-full opacity-10">
-                    <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-blue-600 blur-[100px]"></div>
-                    <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-600 blur-[100px]"></div>
+                    <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-emerald-600 blur-[100px]"></div>
+                    <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-teal-600 blur-[100px]"></div>
                 </div>
 
                 <div className="container mx-auto px-6 relative z-10">
                     <div className="grid md:grid-cols-2 gap-16 items-center">
                         <div>
                             <h2 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
-                                Joined by <span className="text-blue-400">10,000+</span> <br />
+                                Joined by <span className="text-emerald-400">10,000+</span> <br />
                                 happy travelers.
                             </h2>
                             <p className="text-slate-400 text-lg mb-8">
@@ -131,7 +131,7 @@ const LandingPage = () => {
                                 "I usually stress about planning trips, but Journey360 made it fun. The AI suggestions were spot on, and the budget tool saved me tons of money!"
                             </p>
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center font-bold text-lg">
+                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center font-bold text-lg">
                                     S
                                 </div>
                                 <div>
@@ -153,7 +153,7 @@ const LandingPage = () => {
                     </p>
                     <button
                         onClick={() => navigate('/signup')}
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold py-4 px-12 rounded-full shadow-xl hover:shadow-blue-500/25 transition-all transform hover:-translate-y-1"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white text-xl font-bold py-4 px-12 rounded-full shadow-xl hover:shadow-emerald-500/25 transition-all transform hover:-translate-y-1"
                     >
                         Create My Itinerary
                     </button>

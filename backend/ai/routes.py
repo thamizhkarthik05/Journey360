@@ -155,3 +155,84 @@ def summary(trip_id: str, user=Depends(get_current_user)):
 @router.post("/ai/safety/assess")
 def safety(location: str, user=Depends(get_current_user)):
     return assess_safety(location)
+
+@router.get("/ai/dashboard/context")
+def get_dashboard_context(user=Depends(get_current_user)):
+    # 1. Find upcoming/active trip
+    # Find trips that start today or in future, or ended recently
+    # For now, simplistic approach: find the first trip sorted by start_date ascending (closest future)
+    # or just find *any* trip for the MVP.
+    # Let's try to find a trip that contains "today" or is the next upcoming one.
+    
+    # Check if trips_collection is valid (might be None if db connection failed)
+    if trips_collection is None:
+         return {"error": "Database not connected"}
+
+    # Get all user trips
+    user_trips = list(trips_collection.find({"user_id": user["uid"]}))
+    
+    if not user_trips:
+        return None  # No context
+
+    # Sort trips by start_date. Assuming format YYYY-MM-DD
+    # TODO: Proper date parsing.
+    # Sort trips by _id desc (natural creation order usually) to get latest
+    user_trips.sort(key=lambda x: x.get("_id", ""), reverse=True)
+    active_trip = user_trips[0] 
+    
+    trip_id = active_trip.get("trip_id")
+    print(f"DEBUG: Active Trip: {active_trip.get('destination')} ({trip_id})", flush=True)
+
+    # 2. Get Weather
+    from backend.services.weather import get_weather
+    weather = get_weather(active_trip.get("destination", "Tokyo"))
+    
+    # 3. Get Schedule (Itinerary)
+    itinerary = itineraries_collection.find_one({"tripId": trip_id})
+    
+    # Fallback: Try matching by destination and user_id if ID lookup fails
+    # (Sometimes dev databases get out of sync with IDs)
+    if not itinerary:
+         print("DEBUG: Itinerary not found by ID, trying destination...", flush=True)
+         itinerary = itineraries_collection.find_one({
+             "destination": active_trip.get("destination"),
+             "userId": user["uid"]
+         })
+
+    print(f"DEBUG: Itinerary Found: {bool(itinerary)}", flush=True)
+    
+    schedule = []
+    next_activity = None
+    
+    if itinerary:
+        # Find "today" in itinerary
+        # For MVP, just return Day 1 or the first few items
+        days = itinerary.get("days", [])
+        print(f"DEBUG: Itinerary Days: {len(days)}", flush=True)
+        if days:
+            first_day = days[0]
+            # Use specific places from day 1
+            places = first_day.get("places", [])
+            print(f"DEBUG: First Day Places: {len(places)}", flush=True)
+            
+            # Map to simpler structure
+            for p in places:
+                 schedule.append({
+                     "title": p.get("name"),
+                     "time": p.get("time", "Anytime"),
+                     "location": p.get("location", active_trip.get("destination")),
+                     "description": p.get("description")
+                 })
+            
+            if schedule:
+                next_activity = schedule[0]
+                print(f"DEBUG: Next Activity: {next_activity['title']}", flush=True)
+
+    return {
+        "trip_id": active_trip.get("trip_id"),
+        "destination": active_trip.get("destination"),
+        "startDate": active_trip.get("start_date"),
+        "weather": weather,
+        "next_activity": next_activity,
+        "schedule": schedule[:5] # Limit to 5 items
+    }

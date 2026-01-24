@@ -29,9 +29,9 @@ const AlertItem = ({ alert }) => {
                 return {
                     bg: 'bg-white',
                     border: 'border-slate-100',
-                    iconBg: 'bg-blue-100',
-                    iconColor: 'text-blue-600',
-                    badgeColor: 'text-blue-500',
+                    iconBg: 'bg-emerald-100',
+                    iconColor: 'text-emerald-600',
+                    badgeColor: 'text-emerald-500',
                     Icon: Train,
                     label: 'Transit'
                 };
@@ -75,7 +75,7 @@ const AlertItem = ({ alert }) => {
                     <div className="flex items-center gap-3 text-xs md:text-sm font-medium">
                         <span className="text-slate-500">{alert.time}</span>
                         {alert.distance && (
-                            <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-md">
+                            <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md">
                                 {alert.distance}
                             </span>
                         )}

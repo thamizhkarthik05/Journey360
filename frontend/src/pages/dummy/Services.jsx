@@ -41,7 +41,7 @@ const Services = () => {
             icon: Bot,
             title: "AI Trip Planner",
             desc: "Generate complete, personalized itineraries in seconds using our advanced Gemini AI engine.",
-            color: "bg-blue-600",
+            color: "bg-emerald-600",
             path: "/dashboard" // Working Feature
         },
         {
@@ -55,7 +55,7 @@ const Services = () => {
             icon: Map,
             title: "Smart Navigation",
             desc: "Interactive maps with curated points of interest, hidden gems, and optimized routes.",
-            color: "bg-indigo-600",
+            color: "bg-teal-600",
             path: "/my-trips" // Working Feature (Maps are inside itineraries)
         },
         {
@@ -86,7 +86,7 @@ const Services = () => {
             <div className="max-w-7xl mx-auto p-8 mb-20">
                 <div className="text-center max-w-3xl mx-auto mb-16 pt-12">
                     <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-6">
-                        Everything you need for the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">perfect trip</span>
+                        Everything you need for the <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">perfect trip</span>
                     </h1>
                     <p className="text-xl text-gray-500 dark:text-gray-400">
                         Access our suite of AI-powered tools designed to make your journey safer, smarter, and more memorable.

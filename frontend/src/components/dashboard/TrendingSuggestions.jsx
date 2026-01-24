@@ -72,7 +72,7 @@ const TrendingSuggestions = ({ onSelectSuggestion }) => {
 
                             <button
                                 onClick={() => onSelectSuggestion && onSelectSuggestion(place)}
-                                className="flex items-center gap-2 text-xs font-bold text-blue-400 group/btn pt-1 hover:text-blue-300 transition-colors uppercase tracking-wide"
+                                className="flex items-center gap-2 text-xs font-bold text-emerald-400 group/btn pt-1 hover:text-emerald-300 transition-colors uppercase tracking-wide"
                             >
                                 Plan This Trip
                                 <ArrowRight size={14} className="transition-transform group-hover/btn:translate-x-1" />

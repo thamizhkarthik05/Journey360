@@ -26,7 +26,7 @@ const SafetySidebar = () => {
                         key={item.label}
                         href="#"
                         className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${item.active
-                            ? 'bg-blue-50 text-blue-600 font-medium'
+                            ? 'bg-emerald-50 text-emerald-600 font-medium'
                             : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                             }`}
                     >
@@ -41,7 +41,7 @@ const SafetySidebar = () => {
                 <div className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
                     <div className="h-24 bg-slate-200 rounded-lg mb-3 overflow-hidden relative">
                         {/* Placeholder for map */}
-                        <div className="absolute inset-0 bg-opacity-10 bg-blue-500 flex items-center justify-center text-slate-400 text-xs">
+                        <div className="absolute inset-0 bg-opacity-10 bg-emerald-500 flex items-center justify-center text-slate-400 text-xs">
                             Map View
                         </div>
                     </div>

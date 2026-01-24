@@ -69,7 +69,7 @@ export default function SignupForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-60"
+        className="w-full bg-emerald-600 text-white py-2 rounded hover:bg-emerald-700 disabled:opacity-60"
       >
         {loading ? "Creating..." : "Create Account"}
       </button>
@@ -77,7 +77,7 @@ export default function SignupForm() {
       <p className="text-sm text-center mt-4">
         Already have an account?{" "}
         <span
-          className="text-blue-600 cursor-pointer hover:underline"
+          className="text-emerald-600 cursor-pointer hover:underline"
           onClick={() => navigate("/login")}
         >
           Login

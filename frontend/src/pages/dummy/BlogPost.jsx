@@ -82,7 +82,7 @@ const BlogPost = () => {
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">Article Not Found</h2>
-                    <button onClick={() => navigate('/about')} className="text-blue-600 hover:underline">Return to Blog</button>
+                    <button onClick={() => navigate('/about')} className="text-emerald-600 hover:underline">Return to Blog</button>
                 </div>
             </div>
         );
@@ -109,7 +109,7 @@ const BlogPost = () => {
                             <ArrowLeft size={16} /> Back to Insights
                         </button>
                         <div className="flex items-center gap-4 mb-4">
-                            <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                            <span className="bg-emerald-600 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                                 {post.category}
                             </span>
                             <span className="flex items-center gap-2 text-sm text-gray-300">
@@ -137,7 +137,7 @@ const BlogPost = () => {
                 <div className="max-w-3xl mx-auto px-6 py-12">
                     <div className="flex justify-between items-center mb-8 pb-8 border-b border-gray-100">
                         <div className="flex gap-4">
-                            <button className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors">
+                            <button className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 transition-colors">
                                 <Share2 size={18} />
                             </button>
                         </div>
@@ -164,7 +164,7 @@ const BlogPost = () => {
                         <p className="text-gray-600 mb-6">Join Journey360 today to experience travel reimagined.</p>
                         <button
                             onClick={() => navigate('/signup')}
-                            className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/30"
+                            className="bg-emerald-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/30"
                         >
                             Start Your Journey Free
                         </button>

@@ -54,13 +54,13 @@ const Contact = () => {
     return (
         <div className="bg-slate-50 min-h-screen font-sans text-slate-900">
             {/* Hero Section */}
-            <div className="bg-blue-600 py-16 sm:py-24 lg:py-32 relative overflow-hidden">
+            <div className="bg-emerald-600 py-16 sm:py-24 lg:py-32 relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
                 <div className="max-w-7xl mx-auto px-4 relative z-10 text-center">
                     <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-6">
                         We'd Love to Hear From You
                     </h1>
-                    <p className="text-xl text-blue-100 max-w-2xl mx-auto">
+                    <p className="text-xl text-emerald-100 max-w-2xl mx-auto">
                         Whether you have a question about features, pricing, or need support planning your next adventure, our team is ready to help.
                     </p>
                 </div>
@@ -73,17 +73,17 @@ const Contact = () => {
                     <div className="lg:col-span-1 space-y-6">
                         {/* Card 1 */}
                         <div className="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 hover:transform hover:-translate-y-1 transition-all duration-300">
-                            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mb-4">
+                            <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 mb-4">
                                 <MessageSquare size={24} />
                             </div>
                             <h3 className="text-lg font-bold text-slate-900 mb-2">Chat Support</h3>
                             <p className="text-slate-500 text-sm mb-4">Our friendly team is here to help.</p>
-                            <a href="mailto:support@journey360.ai" className="text-blue-600 font-bold text-sm hover:underline">support@journey360.ai</a>
+                            <a href="mailto:support@journey360.ai" className="text-emerald-600 font-bold text-sm hover:underline">support@journey360.ai</a>
                         </div>
 
                         {/* Card 2 */}
                         <div className="bg-white p-6 rounded-2xl shadow-lg border border-slate-100 hover:transform hover:-translate-y-1 transition-all duration-300">
-                            <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 mb-4">
+                            <div className="w-12 h-12 bg-teal-50 rounded-xl flex items-center justify-center text-teal-600 mb-4">
                                 <MapPin size={24} />
                             </div>
                             <h3 className="text-lg font-bold text-slate-900 mb-2">Visit Us</h3>
@@ -108,7 +108,7 @@ const Contact = () => {
                         <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden h-full flex flex-col">
                             <div className="p-8 sm:p-10 flex-1">
                                 <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                                    <Mail className="text-blue-600" /> Send us a message
+                                    <Mail className="text-emerald-600" /> Send us a message
                                 </h2>
 
                                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -121,7 +121,7 @@ const Contact = () => {
                                                 required
                                                 value={formState.name}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-300"
+                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-300"
                                                 placeholder="Michelle Paul"
                                             />
                                         </div>
@@ -133,7 +133,7 @@ const Contact = () => {
                                                 required
                                                 value={formState.email}
                                                 onChange={handleChange}
-                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-300"
+                                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-300"
                                                 placeholder="Mike@example.com"
                                             />
                                         </div>
@@ -147,7 +147,7 @@ const Contact = () => {
                                             required
                                             value={formState.subject}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-300"
+                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-300"
                                             placeholder="How can we help?"
                                         />
                                     </div>
@@ -160,7 +160,7 @@ const Contact = () => {
                                             rows="5"
                                             value={formState.message}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-300 resize-none"
+                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none transition-all placeholder:text-slate-300 resize-none"
                                             placeholder="Tell us about your trip plans..."
                                         ></textarea>
                                     </div>
@@ -168,7 +168,7 @@ const Contact = () => {
                                     <button
                                         type="submit"
                                         disabled={sending || sent}
-                                        className={`w-full py-4 rounded-xl font-bold text-lg text-white shadow-lg shadow-blue-500/30 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 ${sent ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-blue-600 hover:bg-blue-700'
+                                        className={`w-full py-4 rounded-xl font-bold text-lg text-white shadow-lg shadow-emerald-500/30 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 ${sent ? 'bg-emerald-500 hover:bg-emerald-600' : 'bg-emerald-600 hover:bg-emerald-700'
                                             } ${sending ? 'opacity-80 cursor-wait' : ''}`}
                                     >
                                         {sending ? (
@@ -193,7 +193,7 @@ const Contact = () => {
                 {/* FAQ Section */}
                 <div className="mt-20 max-w-4xl mx-auto">
                     <div className="text-center mb-12">
-                        <span className="text-blue-600 font-bold tracking-wider text-sm uppercase bg-blue-50 px-3 py-1 rounded-full">Support</span>
+                        <span className="text-emerald-600 font-bold tracking-wider text-sm uppercase bg-emerald-50 px-3 py-1 rounded-full">Support</span>
                         <h2 className="text-3xl font-bold text-slate-900 mt-4 mb-4">Frequently Asked Questions</h2>
                         <p className="text-slate-600">Quick answers to common questions about Journey360.</p>
                     </div>
@@ -213,7 +213,7 @@ const Contact = () => {
                                         {faq.q}
                                     </span>
                                     {activeFaq === idx ? (
-                                        <ChevronUp className="text-blue-600 w-5 h-5" />
+                                        <ChevronUp className="text-emerald-600 w-5 h-5" />
                                     ) : (
                                         <ChevronDown className="text-slate-400 w-5 h-5" />
                                     )}

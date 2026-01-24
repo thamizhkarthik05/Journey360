@@ -26,7 +26,7 @@ const Profile = () => {
 
                 <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 overflow-hidden transition-colors duration-300">
                     {/* Header Banner */}
-                    <div className="h-32 bg-gradient-to-r from-blue-600 to-indigo-600 relative">
+                    <div className="h-32 bg-gradient-to-r from-emerald-600 to-teal-600 relative">
                         <div className="absolute -bottom-12 left-8">
                             <div className="w-24 h-24 bg-white dark:bg-slate-800 rounded-full p-1 shadow-md">
                                 <img
@@ -57,7 +57,7 @@ const Profile = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="p-4 bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-gray-100 dark:border-slate-800 transition-colors">
                                 <div className="flex items-center gap-3 mb-2">
-                                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg">
+                                    <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg">
                                         <Mail size={20} />
                                     </div>
                                     <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">Email Address</span>

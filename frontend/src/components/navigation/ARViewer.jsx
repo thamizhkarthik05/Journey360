@@ -341,13 +341,13 @@ const ARViewer = ({ destination, onClose }) => {
         <div className="p-6 flex justify-between items-start">
           <div className="bg-slate-900/80 backdrop-blur-xl p-4 rounded-3xl border border-white/10 text-white shadow-2xl animate-in slide-in-from-top duration-500">
             <div className="flex items-center gap-3 mb-1">
-              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center">
                 <Navigation size={16} fill="white" />
               </div>
               <div>
                 <h2 className="font-bold text-lg leading-tight truncate max-w-[200px]">{destination.name}</h2>
-                <div className="flex items-center gap-1.5 text-blue-400 text-[10px] font-bold uppercase tracking-wider">
-                  <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+                <div className="flex items-center gap-1.5 text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                   Active AR Navigation
                 </div>
               </div>
@@ -370,25 +370,25 @@ const ARViewer = ({ destination, onClose }) => {
           <div className="bg-slate-900/90 backdrop-blur-2xl p-6 rounded-[40px] text-white shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] border border-white/10 flex items-center gap-6 animate-in slide-in-from-bottom duration-700 pointer-events-auto">
 
             {/* Direction Icon */}
-            <div className={`w-20 h-20 rounded-3xl bg-blue-600 flex items-center justify-center text-4xl shadow-lg shadow-blue-500/30 transition-all duration-500 ${turnDirection !== 'STRAIGHT' ? 'scale-110' : ''}`}>
+            <div className={`w-20 h-20 rounded-3xl bg-emerald-600 flex items-center justify-center text-4xl shadow-lg shadow-emerald-500/30 transition-all duration-500 ${turnDirection !== 'STRAIGHT' ? 'scale-110' : ''}`}>
               {turnDirection === 'LEFT' ? '⬅️' : turnDirection === 'RIGHT' ? '➡️' : '⬆️'}
             </div>
 
             {/* Instruction Context */}
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-1 italic">
+              <div className="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-1 italic">
                 {turnDirection === 'STRAIGHT' ? 'Go Straight For' : `Turn ${turnDirection} In`}
               </div>
               <div className="text-4xl font-black tracking-tight">{distanceText}</div>
               <div className="flex items-center gap-2 mt-2 text-slate-400 text-xs font-medium bg-white/5 w-fit px-3 py-1 rounded-full border border-white/5">
-                <MapPin size={12} className="text-blue-500" />
+                <MapPin size={12} className="text-emerald-500" />
                 <span className="truncate">{info}</span>
               </div>
             </div>
 
             {/* Compass Mini-Widget */}
             <div className="w-14 h-14 rounded-full border border-white/10 bg-white/5 flex items-center justify-center relative shadow-inner">
-              <Compass className="text-blue-500/40" size={24} />
+              <Compass className="text-emerald-500/40" size={24} />
               <div
                 className="absolute inset-0 flex items-center justify-center transition-transform duration-200 ease-out"
                 style={{ transform: `rotate(${-stateRef.current.phoneHeading}deg)` }}

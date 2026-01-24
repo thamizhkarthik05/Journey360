@@ -91,7 +91,7 @@ export default function LoginForm() {
     return (
       <div className="bg-white w-full max-w-md rounded-2xl shadow-xl p-8 border border-gray-100/50">
         <div className="mb-6 text-center">
-          <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
+          <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-600">
             <ShieldCheck size={32} />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Two-Factor Auth</h2>
@@ -109,7 +109,7 @@ export default function LoginForm() {
               autoFocus
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
-              className="w-full text-center text-3xl tracking-[1em] font-mono py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:tracking-normal"
+              className="w-full text-center text-3xl tracking-[1em] font-mono py-3 rounded-xl border border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none transition-all placeholder:tracking-normal"
               placeholder="000000"
             />
           </div>
@@ -123,7 +123,7 @@ export default function LoginForm() {
           <button
             type="submit"
             disabled={loading || verificationCode.length !== 6}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:shadow-none"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:shadow-none"
           >
             {loading ? <Loader2 size={18} className="animate-spin" /> : "Verify & Sign In"}
           </button>
@@ -156,14 +156,14 @@ export default function LoginForm() {
         <div>
           <label className="text-xs font-semibold text-gray-700 block mb-1.5 ml-1">Email Address</label>
           <div className="relative group">
-            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" size={16} />
+            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-600 transition-colors" size={16} />
             <input
               type="email"
               placeholder="name@company.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium"
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 transition-all font-medium"
             />
           </div>
         </div>
@@ -174,20 +174,20 @@ export default function LoginForm() {
             <label className="text-xs font-semibold text-gray-700">Password</label>
             <Link
               to="/forgot-password"
-              className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+              className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:underline transition-colors"
             >
               Forgot password?
             </Link>
           </div>
           <div className="relative group">
-            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors" size={16} />
+            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-emerald-600 transition-colors" size={16} />
             <input
               type="password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium"
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 transition-all font-medium"
             />
           </div>
         </div>
@@ -198,7 +198,7 @@ export default function LoginForm() {
             <input
               type="checkbox"
               id="remember"
-              className="peer h-4 w-4 cursor-pointer appearance-none rounded border border-gray-300 transition-all checked:border-blue-600 checked:bg-blue-600 hover:border-blue-400"
+              className="peer h-4 w-4 cursor-pointer appearance-none rounded border border-gray-300 transition-all checked:border-emerald-600 checked:bg-emerald-600 hover:border-emerald-400"
             />
             <Check size={12} className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100 pointer-events-none" strokeWidth={3} />
           </div>
@@ -216,7 +216,7 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-sm"
+          className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white py-3 rounded-xl font-bold shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2 text-sm"
         >
           {loading ? (
             <>
@@ -259,7 +259,7 @@ export default function LoginForm() {
         Don&apos;t have an account?{" "}
         <Link
           to="/signup"
-          className="text-blue-600 hover:text-blue-700 hover:underline font-semibold"
+          className="text-emerald-600 hover:text-emerald-700 hover:underline font-semibold"
         >
           Create free account
         </Link>

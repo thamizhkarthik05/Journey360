@@ -92,6 +92,15 @@ export const apiService = {
         return response.json();
     },
 
+    getDashboardContext: async (auth) => {
+        const headers = await getHeaders(auth);
+        const response = await fetch(`${BASE_URL}/ai/dashboard/context`, {
+            headers
+        });
+        if (!response.ok) throw new Error("Failed to fetch dashboard context");
+        return response.json();
+    },
+
     // User Profile
     getProfile: async (auth) => {
         const headers = await getHeaders(auth);

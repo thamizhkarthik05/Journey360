@@ -72,7 +72,7 @@ const ChatInterface = () => {
 
                         {/* AI Avatar */}
                         {msg.sender === 'ai' && (
-                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-4 flex-shrink-0">
+                            <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center mr-4 flex-shrink-0">
                                 <span className="text-xl">🤖</span>
                             </div>
                         )}
@@ -86,7 +86,7 @@ const ChatInterface = () => {
                             {/* Message Bubble */}
                             {msg.type === 'text' && (
                                 <div className={`p-5 rounded-2xl shadow-sm leading-relaxed ${msg.sender === 'user'
-                                    ? 'bg-blue-600 text-white rounded-br-none'
+                                    ? 'bg-emerald-600 text-white rounded-br-none'
                                     : 'bg-white border border-gray-100 text-gray-700 rounded-bl-none'
                                     }`}>
                                     {msg.sender === 'user' ? (
@@ -100,7 +100,7 @@ const ChatInterface = () => {
                                                 ol: ({ node, ...props }) => <ol className="list-decimal ml-4 space-y-1 mt-2 mb-2" {...props} />,
                                                 li: ({ node, ...props }) => <li className="pl-1" {...props} />,
                                                 p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
-                                                a: ({ node, ...props }) => <a className="text-blue-500 hover:underline" {...props} />,
+                                                a: ({ node, ...props }) => <a className="text-emerald-500 hover:underline" {...props} />,
                                             }}
                                         >
                                             {msg.content}
@@ -123,7 +123,7 @@ const ChatInterface = () => {
                                                 </div>
                                             </div>
                                             <p className="text-xs text-gray-500 mb-3">{card.tags}</p>
-                                            <button className="w-full py-2 border border-blue-100 text-blue-600 rounded-lg text-sm font-semibold hover:bg-blue-50 transition-colors">
+                                            <button className="w-full py-2 border border-emerald-100 text-emerald-600 rounded-lg text-sm font-semibold hover:bg-emerald-50 transition-colors">
                                                 Details
                                             </button>
                                         </div>
@@ -141,7 +141,7 @@ const ChatInterface = () => {
 
                 {isLoading && (
                     <div className="flex justify-start">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-4 flex-shrink-0 animate-pulse">
+                        <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center mr-4 flex-shrink-0 animate-pulse">
                             <span className="text-xl">🤖</span>
                         </div>
                         <div className="bg-white border border-gray-100 p-4 rounded-2xl rounded-bl-none shadow-sm flex gap-2 items-center">
@@ -166,7 +166,7 @@ const ChatInterface = () => {
                             className="px-4 py-2 bg-white border border-gray-200 rounded-full text-xs font-semibold text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center gap-2"
                         >
                             {chip === 'Show way to hotel' && <span className="text-red-500">📍</span>}
-                            {chip === 'Safety tips for Shinjuku' && <span className="text-blue-500">🛡️</span>}
+                            {chip === 'Safety tips for Shinjuku' && <span className="text-emerald-500">🛡️</span>}
                             {chip === 'Next train to Shibuya' && <span className="text-gray-500">🚆</span>}
                             {chip === "Tomorrow's weather" && <span className="text-yellow-500">⛅</span>}
                             <span>{chip}</span>
@@ -175,7 +175,7 @@ const ChatInterface = () => {
                 </div>
 
                 {/* Text Input */}
-                <div className="bg-gray-50 p-2 rounded-2xl flex items-center gap-2 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+                <div className="bg-gray-50 p-2 rounded-2xl flex items-center gap-2 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
                     <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
                         <Paperclip size={20} />
                     </button>
@@ -189,7 +189,7 @@ const ChatInterface = () => {
                     />
                     <button
                         onClick={handleSend}
-                        className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 shadow-md transition-all active:scale-95"
+                        className="p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 shadow-md transition-all active:scale-95"
                         disabled={isLoading}
                     >
                         <Send size={18} />

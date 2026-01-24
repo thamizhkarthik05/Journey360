@@ -33,7 +33,7 @@ const ToggleItem = ({ label, description, isOn, onToggle }) => (
             <p className="font-semibold text-gray-800 dark:text-gray-200 text-sm">{label}</p>
             {description && <p className="text-xs text-gray-400 mt-1">{description}</p>}
         </div>
-        <div className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ${isOn ? 'bg-blue-600' : 'bg-gray-300 dark:bg-slate-600'}`}>
+        <div className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 ${isOn ? 'bg-emerald-600' : 'bg-gray-300 dark:bg-slate-600'}`}>
             <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${isOn ? 'translate-x-6' : 'translate-x-0'}`}></div>
         </div>
     </div>
@@ -46,7 +46,7 @@ const InputItem = ({ label, value, onChange, type = "text", placeholder }) => (
             type={type}
             value={value || ''}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm font-medium"
+            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-sm font-medium"
             placeholder={placeholder}
         />
     </div>
@@ -202,7 +202,7 @@ const Settings = () => {
         }
     };
 
-    if (loading) return <AppLayout><div className="flex justify-center items-center h-screen"><Loader2 className="animate-spin text-blue-600" /></div></AppLayout>;
+    if (loading) return <AppLayout><div className="flex justify-center items-center h-screen"><Loader2 className="animate-spin text-emerald-600" /></div></AppLayout>;
 
     return (
         <AppLayout>
@@ -216,7 +216,7 @@ const Settings = () => {
                         <button
                             onClick={handleSave}
                             disabled={saving}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-500/30 transition-all disabled:opacity-70 active:scale-95"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-emerald-500/30 transition-all disabled:opacity-70 active:scale-95"
                         >
                             {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
                             {saving ? 'Saving...' : 'Save Changes'}
@@ -224,9 +224,9 @@ const Settings = () => {
                     </div>
 
                     {/* 1. Profile Management */}
-                    <SettingsSection icon={User} title="My Profile" description="Update your personal information." color="text-blue-600 bg-blue-600">
+                    <SettingsSection icon={User} title="My Profile" description="Update your personal information." color="text-emerald-600 bg-emerald-600">
                         <div className="flex flex-col sm:flex-row gap-6 items-start">
-                            <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-3xl font-bold text-blue-600 border-4 border-white shadow-sm">
+                            <div className="w-24 h-24 rounded-full bg-emerald-100 flex items-center justify-center text-3xl font-bold text-emerald-600 border-4 border-white shadow-sm">
                                 {profile.name ? profile.name[0].toUpperCase() : 'U'}
                             </div>
                             <div className="flex-1 w-full grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -237,7 +237,7 @@ const Settings = () => {
                                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Bio</label>
                                     <textarea
                                         rows="3"
-                                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm font-medium resize-none"
+                                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-sm font-medium resize-none"
                                         placeholder="Tell us a bit about yourself..."
                                         value={profile.bio || ''}
                                         onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
@@ -293,13 +293,13 @@ const Settings = () => {
                     </SettingsSection>
 
                     {/* 4. Security */}
-                    <SettingsSection icon={Shield} title="Security & Account" description="Protect your account." color="text-indigo-600 bg-indigo-600">
+                    <SettingsSection icon={Shield} title="Security & Account" description="Protect your account." color="text-teal-600 bg-teal-600">
                         <div className="flex items-center justify-between p-3">
                             <div>
                                 <p className="font-semibold text-gray-900 dark:text-white text-sm">Password</p>
                                 <p className="text-xs text-gray-400 mt-1">Last changed recently</p>
                             </div>
-                            <button onClick={handlePasswordReset} className="text-sm font-bold text-blue-600 hover:text-blue-700 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                            <button onClick={handlePasswordReset} className="text-sm font-bold text-emerald-600 hover:text-emerald-700 px-4 py-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
                                 Change Password
                             </button>
                         </div>
@@ -361,7 +361,7 @@ const Settings = () => {
                                                 maxLength="6"
                                                 value={verificationCode}
                                                 onChange={(e) => setVerificationCode(e.target.value)}
-                                                className="w-full text-center text-2xl tracking-widest font-mono py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-black dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                                className="w-full text-center text-2xl tracking-widest font-mono py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-black dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
                                                 placeholder="000000"
                                             />
                                         </div>
@@ -376,7 +376,7 @@ const Settings = () => {
                                             <button
                                                 onClick={handleVerify2FA}
                                                 disabled={verificationCode.length !== 6}
-                                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-bold shadow-lg shadow-blue-500/30 disabled:opacity-50 disabled:shadow-none transition-all"
+                                                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold shadow-lg shadow-emerald-500/30 disabled:opacity-50 disabled:shadow-none transition-all"
                                             >
                                                 Verify & Enable
                                             </button>
@@ -384,7 +384,7 @@ const Settings = () => {
                                     </div>
                                 ) : (
                                     <div className="flex justify-center py-8">
-                                        <Loader2 className="animate-spin text-blue-600" size={32} />
+                                        <Loader2 className="animate-spin text-emerald-600" size={32} />
                                     </div>
                                 )}
                             </div>

@@ -93,7 +93,7 @@ const AITripCreator = ({ initialData }) => {
     return (
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <div className="flex items-center gap-2 mb-6">
-                <Sparkles className="text-blue-600" size={20} />
+                <Sparkles className="text-emerald-600" size={20} />
                 <h2 className="text-lg font-bold text-gray-900">AI Trip Creator</h2>
             </div>
 
@@ -109,7 +109,7 @@ const AITripCreator = ({ initialData }) => {
                                 placeholder="e.g. Kyoto"
                                 value={destination}
                                 onChange={(e) => setDestination(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all text-sm"
+                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 transition-all text-sm"
                             />
                         </div>
                     </div>
@@ -121,7 +121,7 @@ const AITripCreator = ({ initialData }) => {
                                 type="date"
                                 value={startDate}
                                 onChange={(e) => setStartDate(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all text-sm"
+                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 transition-all text-sm"
                             />
                         </div>
                     </div>
@@ -133,7 +133,7 @@ const AITripCreator = ({ initialData }) => {
                                 type="date"
                                 value={endDate}
                                 onChange={(e) => setEndDate(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all text-sm"
+                                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 transition-all text-sm"
                             />
                         </div>
                     </div>
@@ -143,7 +143,7 @@ const AITripCreator = ({ initialData }) => {
                 <div>
                     <div className="flex justify-between mb-2">
                         <label className="block text-sm font-medium text-gray-700">Estimated Budget</label>
-                        <span className="text-sm font-black text-blue-600">₹{parseInt(budget) * 2000}</span>
+                        <span className="text-sm font-black text-emerald-600">₹{parseInt(budget) * 2000}</span>
                     </div>
                     <input
                         type="range"
@@ -151,7 +151,7 @@ const AITripCreator = ({ initialData }) => {
                         max="100"
                         value={budget}
                         onChange={(e) => setBudget(e.target.value)}
-                        className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                        className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-emerald-600"
                     />
                     <div className="flex justify-between text-xs text-gray-400 mt-1">
                         <span>Economy</span>
@@ -169,8 +169,8 @@ const AITripCreator = ({ initialData }) => {
                                 key={interest.id}
                                 onClick={() => toggleInterest(interest.id)}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm transition-all ${selectedInterests.includes(interest.id)
-                                    ? 'border-blue-600 bg-blue-50 text-blue-600'
-                                    : 'border-gray-100 text-gray-600 hover:border-blue-200 hover:bg-blue-50'
+                                    ? 'border-emerald-600 bg-emerald-50 text-emerald-600'
+                                    : 'border-gray-100 text-gray-600 hover:border-emerald-200 hover:bg-emerald-50'
                                     }`}
                             >
                                 <span>{interest.icon}</span>
@@ -186,7 +186,7 @@ const AITripCreator = ({ initialData }) => {
                             placeholder="Add custom interest (e.g. Scuba Diving, History)"
                             value={customInterest}
                             onChange={(e) => setCustomInterest(e.target.value)}
-                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all text-sm"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 transition-all text-sm"
                         />
                     </div>
                 </div>
@@ -199,7 +199,7 @@ const AITripCreator = ({ initialData }) => {
                             <button
                                 key={p}
                                 onClick={() => setPace(p)}
-                                className={`text-sm py-2 rounded-lg font-medium transition-all ${pace === p ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                                className={`text-sm py-2 rounded-lg font-medium transition-all ${pace === p ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'
                                     }`}
                             >
                                 {p}
@@ -212,7 +212,7 @@ const AITripCreator = ({ initialData }) => {
                 <button
                     onClick={handleManualGenerate}
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white py-3.5 rounded-xl font-semibold shadow-lg shadow-indigo-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-70"
+                    className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white py-3.5 rounded-xl font-semibold shadow-lg shadow-teal-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-70"
                 >
                     {loading ? <Loader2 className="animate-spin" size={18} /> : <Sparkles size={18} />}
                     {loading ? 'Crafting Itinerary...' : 'Generate AI Itinerary'}

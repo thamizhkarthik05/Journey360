@@ -27,7 +27,7 @@ export default function Navbar({ isLoggedIn, currentPath }) {
     <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 h-16 flex items-center justify-between px-6 sticky top-0 z-50 transition-all duration-300">
       {/* Logo */}
       <Link to="/" className="flex items-center gap-2 text-xl font-semibold hover:opacity-80 transition-opacity">
-        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center rotate-45 shadow-sm">
+        <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center rotate-45 shadow-sm">
           <div className="w-4 h-4 bg-white rotate-45"></div>
         </div>
         <span className="text-xl font-bold text-gray-900 tracking-tight">Journey360</span>
@@ -37,7 +37,7 @@ export default function Navbar({ isLoggedIn, currentPath }) {
       <div className="flex items-center gap-8">
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
           {['Services', 'About', 'Contact'].map((item) => (
-            <Link key={item} to={`/${item.toLowerCase()}`} className="hover:text-blue-600 transition-colors">
+            <Link key={item} to={`/${item.toLowerCase()}`} className="hover:text-emerald-600 transition-colors">
               {item}
             </Link>
           ))}
@@ -47,7 +47,7 @@ export default function Navbar({ isLoggedIn, currentPath }) {
           {isLoggedIn ? (
             <Link
               to="/dashboard"
-              className="text-sm font-bold text-white bg-blue-600 px-5 py-2.5 rounded-xl hover:bg-blue-700 shadow-md shadow-blue-500/20 transition-all active:scale-95"
+              className="text-sm font-bold text-white bg-emerald-600 px-5 py-2.5 rounded-xl hover:bg-emerald-700 shadow-md shadow-emerald-500/20 transition-all active:scale-95"
             >
               Go to Dashboard
             </Link>
@@ -55,13 +55,13 @@ export default function Navbar({ isLoggedIn, currentPath }) {
             <>
               <Link
                 to="/login"
-                className="text-sm font-bold text-gray-700 hover:text-blue-600 px-4 py-2 transition-colors"
+                className="text-sm font-bold text-gray-700 hover:text-emerald-600 px-4 py-2 transition-colors"
               >
                 Log In
               </Link>
               <Link
                 to="/signup"
-                className="text-sm font-bold text-white bg-blue-600 px-5 py-2.5 rounded-xl hover:bg-blue-700 shadow-md shadow-blue-500/20 transition-all active:scale-95"
+                className="text-sm font-bold text-white bg-emerald-600 px-5 py-2.5 rounded-xl hover:bg-emerald-700 shadow-md shadow-emerald-500/20 transition-all active:scale-95"
               >
                 Get Started
               </Link>

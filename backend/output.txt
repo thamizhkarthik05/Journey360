@@ -1,0 +1,41 @@
+--- TRIPS ---
+Trip ID: 442b51bc-5699-42f4-a59b-83bb82078149, Dest: chennai, User: HAnx6Gvo65WdJE8J5gyajO1EJtq2
+Trip ID: 67ed0839-7353-49ea-af96-ff0262c41293, Dest: Madurai, User: HAnx6Gvo65WdJE8J5gyajO1EJtq2
+Trip ID: cb4256ce-dab1-4687-aafb-ac73ac28f316, Dest: Vellore, User: HAnx6Gvo65WdJE8J5gyajO1EJtq2
+Trip ID: 1b2a4a22-bdaf-4b73-89cb-24c6a43fa9c6, Dest: Trichy, User: HAnx6Gvo65WdJE8J5gyajO1EJtq2
+Trip ID: e242eca3-acc3-4bcd-9f7c-8af9d523b4fa, Dest: Chennai, User: HAnx6Gvo65WdJE8J5gyajO1EJtq2
+Trip ID: 268e9522-5fd4-4be7-8f4b-2332cb155787, Dest: Chennai , User: XsjorQ2fe9fDEQFvmCV3PPxmq5p1
+Trip ID: 5d9e14c6-7524-4c5a-9e4a-67a9047cdc54, Dest: Chennai , User: XsjorQ2fe9fDEQFvmCV3PPxmq5p1
+Trip ID: 752fc04e-778f-4c9f-a738-81e5bc280004, Dest: New Delhi, User: XsjorQ2fe9fDEQFvmCV3PPxmq5p1
+Trip ID: 84d45603-63f4-4f3c-a876-9814a8391c99, Dest: Agra, User: HAnx6Gvo65WdJE8J5gyajO1EJtq2
+Trip ID: d2a10644-dc3b-4b64-b059-3dc5bde32dd9, Dest: Erode, User: HAnx6Gvo65WdJE8J5gyajO1EJtq2
+Trip ID: 2cccbfa9-3fa9-4aa0-af75-ac2df9e69dab, Dest: Vellore, User: HAnx6Gvo65WdJE8J5gyajO1EJtq2
+Trip ID: bb32f0ab-bcd7-4397-87d6-34d20e232f5b, Dest: Chennai , User: HAnx6Gvo65WdJE8J5gyajO1EJtq2
+Trip ID: 72015d20-a0d4-453f-b340-14c90dcf9c0f, Dest: Chennai, User: GRPUKTohpifgFyJ1lcz8vlJlMpX2
+Trip ID: 382c260c-268b-48d8-91dc-cdb1416bbc48, Dest: Mumbai, User: HAnx6Gvo65WdJE8J5gyajO1EJtq2
+
+--- ITINERARIES ---
+Itinerary ID: 3c324b98-4d78-4709-89b8-6e64169ab405, Trip ID: cb4256ce-dab1-4687-aafb-ac73ac28f316, Dest: Vellore
+  -> Matching Trip Found? True
+Itinerary ID: 73d49ec4-a1ac-44b4-b55f-a42d11ccadaa, Trip ID: 1b2a4a22-bdaf-4b73-89cb-24c6a43fa9c6, Dest: Trichy
+  -> Matching Trip Found? True
+Itinerary ID: c06b7b19-af8a-4056-b8a1-807926e473b5, Trip ID: e242eca3-acc3-4bcd-9f7c-8af9d523b4fa, Dest: Chennai
+  -> Matching Trip Found? True
+Itinerary ID: c0db59f4-1230-40b2-a93b-6bdc089c6bb4, Trip ID: 268e9522-5fd4-4be7-8f4b-2332cb155787, Dest: Chennai 
+  -> Matching Trip Found? True
+Itinerary ID: f155e4f9-b850-4dd2-ac67-51c6ac2bde2e, Trip ID: 5d9e14c6-7524-4c5a-9e4a-67a9047cdc54, Dest: Chennai 
+  -> Matching Trip Found? True
+Itinerary ID: a0e76c64-edd6-403c-aaeb-8fae56b2069f, Trip ID: 752fc04e-778f-4c9f-a738-81e5bc280004, Dest: New Delhi
+  -> Matching Trip Found? True
+Itinerary ID: a4ff684f-677d-4bb9-b5d3-4d798e88b0af, Trip ID: 84d45603-63f4-4f3c-a876-9814a8391c99, Dest: Agra
+  -> Matching Trip Found? True
+Itinerary ID: def286b6-72d9-4223-a02d-104525534eac, Trip ID: d2a10644-dc3b-4b64-b059-3dc5bde32dd9, Dest: Erode
+  -> Matching Trip Found? True
+Itinerary ID: 3e443fc4-c74b-42ca-898b-a5bccda4ab1a, Trip ID: 2cccbfa9-3fa9-4aa0-af75-ac2df9e69dab, Dest: Vellore
+  -> Matching Trip Found? True
+Itinerary ID: beebe520-0ee0-4fb5-ba85-c2f187e1c91f, Trip ID: bb32f0ab-bcd7-4397-87d6-34d20e232f5b, Dest: Chennai 
+  -> Matching Trip Found? True
+Itinerary ID: d93f6098-2421-4068-9bee-5ecf558e15b2, Trip ID: 72015d20-a0d4-453f-b340-14c90dcf9c0f, Dest: Chennai
+  -> Matching Trip Found? True
+Itinerary ID: 68e94c0d-7355-4b00-8f94-f54aee399caf, Trip ID: 382c260c-268b-48d8-91dc-cdb1416bbc48, Dest: Mumbai
+  -> Matching Trip Found? True

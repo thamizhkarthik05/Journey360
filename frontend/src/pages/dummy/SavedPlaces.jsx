@@ -16,7 +16,7 @@ const SavedPlaces = () => {
                     <p className="text-gray-500 max-w-sm text-center">
                         When you find interesting locations or hotels during your trip planning, save them here for quick access.
                     </p>
-                    <button className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                    <button className="mt-6 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2">
                         <MapPin size={18} />
                         Explore Destinations
                     </button>
