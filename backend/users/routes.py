@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from datetime import datetime
 from typing import Optional
 from backend.auth.dependencies import get_current_user
 from backend.database.db import users_collection, trips_collection
@@ -13,6 +14,7 @@ class UserUpdate(BaseModel):
     phone: str | None = None
     bio: str | None = None
     dob: str | None = None
+    photo_url: str | None = None
     preferences: dict | None = None
 
 @router.get("/me", response_model=UserSchema)
@@ -20,30 +22,73 @@ async def get_my_profile(user=Depends(get_current_user)):
     if users_collection is None:
         raise HTTPException(status_code=503, detail="Database unavailable")
     
-    db_user = users_collection.find_one({"uid": user["uid"]})
-    if not db_user:
-        return user 
+    try:
+        db_user = users_collection.find_one({"uid": user["uid"]})
         
-    return db_user
+        # Start with required fields from the token
+        result = {
+            "uid": user["uid"],
+            "email": user["email"],
+            "created_at": datetime.utcnow().isoformat(),
+            "two_factor_enabled": False
+        }
+        
+        if db_user:
+            db_user.pop("_id", None)
+            # Ensure MongoDB datetime objects are not causing issues, 
+            # though Pydantic usually handles them fine.
+            result.update(db_user)
+            
+        print(f"DEBUG: Returning profile for {result.get('email')}")
+        return result
+    except Exception as e:
+        print(f"ERROR fetching profile: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/me", response_model=UserSchema)
 async def update_my_profile(update_data: UserUpdate, user=Depends(get_current_user)):
     if users_collection is None:
         raise HTTPException(status_code=503, detail="Database unavailable")
     
-    update_dict = {k: v for k, v in update_data.dict().items() if v is not None}
-    
-    if not update_dict:
-        return user
+    try:
+        # Use model_dump for Pydantic v2, fallback to .dict() for v1
+        try:
+            update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
+        except AttributeError:
+            update_dict = {k: v for k, v in update_data.dict().items() if v is not None}
+        
+        # Always include email/uid in the document set if upserting
+        update_dict["email"] = user["email"]
+        update_dict["uid"] = user["uid"]
 
-    users_collection.update_one(
-        {"uid": user["uid"]},
-        {"$set": update_dict},
-        upsert=True
-    )
-    
-    updated_user = users_collection.find_one({"uid": user["uid"]})
-    return updated_user
+        users_collection.update_one(
+            {"uid": user["uid"]},
+            {"$set": update_dict},
+            upsert=True
+        )
+        
+        updated_user = users_collection.find_one({"uid": user["uid"]})
+        if updated_user:
+            updated_user.pop("_id", None)
+        
+        # Ensure even the fresh returned object has all required schema fields
+        final_user = {
+            "uid": user["uid"],
+            "email": user["email"],
+            "created_at": datetime.utcnow().isoformat(),
+            "two_factor_enabled": False
+        }
+        if updated_user:
+            final_user.update(updated_user)
+            
+        return final_user
+    except Exception as e:
+        print(f"ERROR updating profile: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/me")
 async def delete_my_account(user=Depends(get_current_user)):

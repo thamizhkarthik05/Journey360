@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 class User(BaseModel):
@@ -11,4 +11,5 @@ class User(BaseModel):
     preferences: dict | None = None
     two_factor_enabled: bool = False
     two_factor_secret: str | None = None
-    created_at: datetime = datetime.utcnow()
+    photo_url: str | None = None
+    created_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())

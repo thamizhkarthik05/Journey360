@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Clock, User, Share2, Facebook, Twitter, Linkedin } from 'lucide-react';
 import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
 
 const BLOG_DATA = {
     'hidden-gems-japan': {
@@ -171,6 +172,7 @@ const BlogPost = () => {
                     </div>
                 </div>
             </article>
+            <Footer />
         </div>
     );
 };

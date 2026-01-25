@@ -1,24 +1,60 @@
+import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { Moon, Sun, Search, Bell, Settings, LogOut } from 'lucide-react';
 import { auth } from '../../services/firebase';
 import { signOut } from 'firebase/auth';
 
+import { apiService } from '../../services/apiService';
+
 const DashboardNavbar = () => {
-    const { theme, toggleTheme } = useTheme();
+    const { theme, toggleTheme, setTheme } = useTheme();
     const navigate = useNavigate();
     const user = auth.currentUser;
-    const userAvatar = user?.email
-        ? `https://ui-avatars.com/api/?name=${user.email.split('@')[0]}&background=random`
-        : "https://ui-avatars.com/api/?name=User&background=random";
+    const [profile, setProfile] = React.useState(null);
+    const [imgError, setImgError] = React.useState(false);
+
+    React.useEffect(() => {
+        const loadProfile = async () => {
+            if (!user) return;
+            try {
+                const data = await apiService.getProfile(auth);
+                setProfile(data);
+            } catch (error) {
+                // Silent catch, use defaults
+            }
+        };
+        loadProfile();
+    }, [user]);
+
+    // Helper function to format name in Title Case
+    const formatName = (name) => {
+        if (!name) return 'User';
+        return name
+            .toLowerCase()
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+    };
+
+    // Get name and format it properly
+    // Priority: 1) Custom name from Settings, 2) Email username (ignore Google displayName)
+    const rawName = profile?.name || user?.email?.split('@')[0] || 'User';
+    const name = formatName(rawName);
+
+    // Prioritize Firebase/Google profile picture, then custom photo_url, then fallback to UI Avatars
+    const userAvatar = !imgError && (user?.photoURL || profile?.photo_url)
+        ? (user?.photoURL || profile?.photo_url)
+        : `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
 
     const handleLogout = async () => {
         await signOut(auth);
+        setTheme('light');
         navigate('/');
     };
 
     return (
-        <header className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 h-16 flex items-center justify-between px-6 sticky top-0 z-50 transition-colors duration-300">
+        <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-200 dark:border-slate-800 h-16 flex items-center justify-between px-6 sticky top-0 z-50 transition-colors duration-300">
             {/* Left: Logo */}
             <div className="flex items-center">
                 {/* Logo */}
@@ -72,7 +108,8 @@ const DashboardNavbar = () => {
                         <img
                             src={userAvatar}
                             alt="Profile"
-                            className="w-9 h-9 rounded-full border border-gray-200 cursor-pointer hover:ring-2 hover:ring-emerald-500 transition-all"
+                            className="w-9 h-9 rounded-full cursor-pointer transition-all object-cover"
+                            onError={() => setImgError(true)}
                         />
                     </Link>
                     <button

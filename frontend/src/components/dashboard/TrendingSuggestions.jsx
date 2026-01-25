@@ -37,7 +37,7 @@ const TrendingSuggestions = ({ onSelectSuggestion }) => {
 
     return (
         <div className="space-y-4">
-            <h3 className="font-bold text-gray-900 text-lg">Trending Suggestions</h3>
+            <h3 className="font-bold text-gray-900 text-lg dark:text-white">Trending Suggestions</h3>
 
             <div className="space-y-4">
                 {suggestions.map((place) => (

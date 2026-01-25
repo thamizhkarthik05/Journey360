@@ -18,13 +18,13 @@ except ImportError:
     )
     from trips.schema import Itinerary
 
-def build_regeneration_prompt(trip, current_itinerary, instruction, constraints):
+def build_regeneration_prompt(trip, current_itinerary, instruction, constraints, currency_symbol="₹", language="English"):
     itinerary_days_json = json.dumps(current_itinerary.get("days", []), indent=2)
     top_hotels_json = json.dumps(current_itinerary.get("topHotels", []), indent=2)
     
     return f"""
 You are 'Journey360 AI', an expert travel consultant.
-You are helping a user modify their existing itinerary for {trip['destination']}.
+You are helping a user modify their existing itinerary for {trip['destination']} in {language}. 
 
 Current Itinerary Days:
 {itinerary_days_json}

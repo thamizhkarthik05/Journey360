@@ -39,14 +39,15 @@ const ToggleItem = ({ label, description, isOn, onToggle }) => (
     </div>
 );
 
-const InputItem = ({ label, value, onChange, type = "text", placeholder }) => (
+const InputItem = ({ label, value, onChange, type = "text", placeholder, disabled = false }) => (
     <div>
         <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">{label}</label>
         <input
             type={type}
             value={value || ''}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-sm font-medium"
+            disabled={disabled}
+            className={`w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 outline-none transition-all text-sm font-medium ${disabled ? 'opacity-60 cursor-not-allowed bg-gray-100 dark:bg-slate-900' : ''}`}
             placeholder={placeholder}
         />
     </div>
@@ -57,6 +58,7 @@ const Settings = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
 
     // User Profile State
     const [profile, setProfile] = useState({
@@ -87,9 +89,12 @@ const Settings = () => {
             try {
                 const data = await apiService.getProfile(auth);
                 // Merge with defaults to prevent null errors
+                // Priority: 1) Saved name from DB, 2) Email username (ignore Google displayName)
+                const initialName = data.name || auth.currentUser?.email?.split('@')[0] || '';
                 setProfile(prev => ({
                     ...prev,
                     ...data,
+                    name: initialName,
                     preferences: {
                         ...prev.preferences,
                         ...(data.preferences || {})
@@ -106,10 +111,14 @@ const Settings = () => {
 
     const handleSave = async () => {
         setSaving(true);
+        setSaveSuccess(false);
         try {
             await apiService.updateProfile(auth, profile);
-            // Simulate brief delay for UX
-            setTimeout(() => setSaving(false), 800);
+            setSaveSuccess(true);
+            setTimeout(() => {
+                setSaving(false);
+                setTimeout(() => setSaveSuccess(false), 3000);
+            }, 600);
         } catch (error) {
             console.error("Failed to save", error);
             setSaving(false);
@@ -213,25 +222,44 @@ const Settings = () => {
                             <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Settings</h1>
                             <p className="text-gray-500 dark:text-gray-400">Manage your profile and preferences.</p>
                         </div>
-                        <button
-                            onClick={handleSave}
-                            disabled={saving}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-emerald-500/30 transition-all disabled:opacity-70 active:scale-95"
-                        >
-                            {saving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-                            {saving ? 'Saving...' : 'Save Changes'}
-                        </button>
+                        <div className="flex flex-col items-end gap-2">
+                            <button
+                                onClick={handleSave}
+                                disabled={saving}
+                                className={`${saveSuccess ? 'bg-green-600' : 'bg-emerald-600 hover:bg-emerald-700'} text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all disabled:opacity-70 active:scale-95`}
+                            >
+                                {saving ? <Loader2 size={18} className="animate-spin" /> : (saveSuccess ? <Shield size={18} /> : <Save size={18} />)}
+                                {saving ? 'Saving...' : (saveSuccess ? 'Changes Saved!' : 'Save Changes')}
+                            </button>
+                            {saveSuccess && <p className="text-xs font-bold text-green-500 animate-bounce">Profile updated successfully!</p>}
+                        </div>
                     </div>
 
                     {/* 1. Profile Management */}
                     <SettingsSection icon={User} title="My Profile" description="Update your personal information." color="text-emerald-600 bg-emerald-600">
                         <div className="flex flex-col sm:flex-row gap-6 items-start">
-                            <div className="w-24 h-24 rounded-full bg-emerald-100 flex items-center justify-center text-3xl font-bold text-emerald-600 border-4 border-white shadow-sm">
-                                {profile.name ? profile.name[0].toUpperCase() : 'U'}
+                            <div className="w-24 h-24 rounded-full bg-emerald-100 flex items-center justify-center text-3xl font-bold text-emerald-600 border-4 border-white shadow-sm overflow-hidden">
+                                {(auth.currentUser?.photoURL || profile.photo_url) ? (
+                                    <img
+                                        src={auth.currentUser?.photoURL || profile.photo_url}
+                                        alt="Profile"
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => e.target.style.display = 'none'}
+                                    />
+                                ) : (
+                                    profile.name ? profile.name[0].toUpperCase() : 'U'
+                                )}
                             </div>
                             <div className="flex-1 w-full grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="md:col-span-2">
+                                    <InputItem label="Login Email (Account ID)" value={auth.currentUser?.email} onChange={() => { }} placeholder="email@example.com" disabled={true} />
+                                    <p className="text-[10px] text-gray-400 mt-1 italic">* Your login email cannot be changed from this page.</p>
+                                </div>
+                                <div className="md:col-span-2">
                                     <InputItem label="Full Name" value={profile.name} onChange={(v) => setProfile({ ...profile, name: v })} placeholder="Your Name" />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <InputItem label="Profile Picture URL" value={profile.photo_url} onChange={(v) => setProfile({ ...profile, photo_url: v })} placeholder="https://example.com/avatar.jpg" />
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Bio</label>

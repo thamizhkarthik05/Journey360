@@ -160,6 +160,7 @@ const LandingPage = () => {
                     <p className="mt-6 text-sm text-slate-400">No credit card required • Instant access</p>
                 </div>
             </section>
+            <Footer />
         </div>
     );
 };

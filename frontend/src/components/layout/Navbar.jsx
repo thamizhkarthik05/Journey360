@@ -1,12 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../../services/firebase";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function Navbar({ isLoggedIn, currentPath }) {
   const navigate = useNavigate();
+  const { setTheme } = useTheme();
 
   const handleLogout = async () => {
     await signOut(auth);
+    setTheme('light');
     navigate("/");
   };
 
@@ -14,14 +17,10 @@ export default function Navbar({ isLoggedIn, currentPath }) {
   const publicPaths = ['/', '/login', '/signup', '/about', '/services', '/contact'];
   const isPublicPage = publicPaths.includes(currentPath) || currentPath.startsWith('/blog/');
 
-  // If we are logged in but on a public page, show the "Go to Dashboard" button
-  // If we are logged out on landing page, show Login / Get Started
-
-  // If we are inside the app (Dashboard etc), this Navbar component returns null because AppLayout likely handles it?
-  // Actually, checking previous code, AppLayout seems to have its own Sidebar but maybe not a top Navbar?
-  // Let's assume this Navbar is ONLY for public facing pages.
-
-  if (!isPublicPage) return null;
+  // If we are logged in, we only show this public Navbar on the Landing Page ('/') 
+  // All other pages (About, Services, Contact, Dashboard etc) use AppLayout or are protected.
+  // This prevents the duplicate Navbar issue you saw on the About page.
+  if (!isPublicPage || (isLoggedIn && currentPath !== '/')) return null;
 
   return (
     <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 h-16 flex items-center justify-between px-6 sticky top-0 z-50 transition-all duration-300">

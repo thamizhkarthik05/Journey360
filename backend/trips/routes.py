@@ -33,6 +33,14 @@ def create_trip(data: dict, user=Depends(get_current_user)):
     # Sanitizer: Fix common misspellings
     dest_name = data["destination"].replace("Kolkatta", "Kolkata").replace("Banglore", "Bengaluru")
 
+    # Fetch Image
+    image_url = None
+    try:
+        from backend.services.image_service import get_destination_image
+        image_url = get_destination_image(dest_name)
+    except Exception as e:
+        print(f"DEBUG: Failed to fetch image for {dest_name}: {e}")
+
     trip = {
         "trip_id": trip_id,
         "user_id": user["uid"],
@@ -43,7 +51,8 @@ def create_trip(data: dict, user=Depends(get_current_user)):
         "budget": data["budget"],
         "interests": data["interests"],
         "travel_pace": data.get("travel_pace", "Balanced"),
-        "status": "CREATED"
+        "status": "CREATED",
+        "image_url": image_url
     }
     trips_collection.insert_one(trip)
     trip["_id"] = str(trip["_id"])
@@ -56,6 +65,24 @@ def list_trips(user=Depends(get_current_user)):
         raise HTTPException(status_code=500, detail="Database not connected")
     
     trips = list(trips_collection.find({"user_id": user["uid"]}).sort("_id", -1))
+    
+    # Backfill images for existing trips
+    from backend.services.image_service import get_destination_image
+    
     for trip in trips:
         trip["_id"] = str(trip["_id"])
+        if "image_url" not in trip or not trip["image_url"]:
+            try:
+                dest = trip.get("destination", "Travel")
+                print(f"DEBUG: Backfilling image for {dest}...")
+                img_url = get_destination_image(dest)
+                if img_url:
+                    trip["image_url"] = img_url
+                    trips_collection.update_one(
+                        {"trip_id": trip["trip_id"]},
+                        {"$set": {"image_url": img_url}}
+                    )
+            except Exception as e:
+                print(f"DEBUG: Backfill error: {e}")
+
     return trips

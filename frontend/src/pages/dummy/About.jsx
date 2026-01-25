@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Globe, Shield, Users, ArrowRight } from 'lucide-react';
+import AppLayout from '../../components/layout/AppLayout';
 import Footer from '../../components/layout/Footer';
 
 const AboutContent = () => {
@@ -9,19 +10,19 @@ const AboutContent = () => {
             {/* Hero Section */}
             <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
                 <div>
-                    <h1 className="text-5xl font-extrabold text-gray-900 mb-6 tracking-tight leading-tight">
-                        Redefining the <span className="text-emerald-600">Future of Travel</span>
+                    <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white mb-6 tracking-tight leading-tight">
+                        Redefining the <span className="text-emerald-600 dark:text-emerald-400">Future of Travel</span>
                     </h1>
-                    <p className="text-xl text-gray-600 leading-relaxed mb-8">
+                    <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
                         Journey360 is your premier AI-powered travel companion. We leverage cutting-edge technology to curate
                         personalized itineraries, provide real-time safety alerts, and manage your travel documents all in one place.
                     </p>
                     <div className="flex flex-wrap gap-4">
-                        <div className="flex items-center gap-2 bg-emerald-50 px-4 py-2 rounded-full text-emerald-700 font-semibold text-sm">
+                        <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/30 px-4 py-2 rounded-full text-emerald-700 dark:text-emerald-400 font-semibold text-sm border border-emerald-100 dark:border-emerald-800/50">
                             <Globe size={18} />
                             <span>Global Coverage</span>
                         </div>
-                        <div className="flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-full text-slate-700 font-semibold text-sm">
+                        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800/50 px-4 py-2 rounded-full text-slate-700 dark:text-gray-300 font-semibold text-sm border border-slate-200 dark:border-slate-700">
                             <Shield size={18} />
                             <span>AI Safety Insights</span>
                         </div>
@@ -31,16 +32,16 @@ const AboutContent = () => {
                     <img
                         src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=2021&auto=format&fit=crop"
                         alt="Adventure"
-                        className="rounded-3xl shadow-2xl shadow-emerald-200/50 object-cover h-[400px] w-full"
+                        className="rounded-3xl shadow-2xl shadow-emerald-200/50 dark:shadow-emerald-900/20 object-cover h-[400px] w-full border border-white/10"
                     />
-                    <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl border border-gray-100 hidden md:block">
+                    <div className="absolute -bottom-6 -left-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 hidden md:block">
                         <div className="flex items-center gap-3">
-                            <div className="p-3 bg-emerald-600 rounded-xl text-white">
+                            <div className="p-3 bg-emerald-600 dark:bg-emerald-500 rounded-xl text-white">
                                 <Users size={24} />
                             </div>
                             <div>
-                                <p className="text-2xl font-bold text-gray-900">10k+</p>
-                                <p className="text-xs text-gray-500 font-medium">Active Travelers</p>
+                                <p className="text-2xl font-bold text-gray-900 dark:text-white">10k+</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Active Travelers</p>
                             </div>
                         </div>
                     </div>
@@ -51,10 +52,10 @@ const AboutContent = () => {
             <section className="mb-24">
                 <div className="flex justify-between items-end mb-10">
                     <div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-2">Travel Insights</h2>
-                        <p className="text-gray-500">Expert tips and stories from the Journey360 community.</p>
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Travel Insights</h2>
+                        <p className="text-gray-500 dark:text-gray-400">Expert tips and stories from the Journey360 community.</p>
                     </div>
-                    <button className="hidden sm:flex items-center gap-2 text-emerald-600 font-bold hover:gap-3 transition-all">
+                    <button className="hidden sm:flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold hover:gap-3 transition-all">
                         View all blogs <ArrowRight size={20} />
                     </button>
                 </div>
@@ -88,21 +89,21 @@ const AboutContent = () => {
                             to={`/blog/${blog.id}`}
                             className="group block cursor-pointer"
                         >
-                            <article>
-                                <div className="relative overflow-hidden rounded-2xl mb-4 h-48">
+                            <article className="h-full bg-white/20 dark:bg-slate-800/20 backdrop-blur-sm rounded-2xl p-4 border border-white/20 dark:border-slate-800 hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all">
+                                <div className="relative overflow-hidden rounded-xl mb-4 h-48">
                                     <img
                                         src={blog.image}
                                         alt={blog.title}
                                         className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500"
                                     />
-                                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-emerald-600">
+                                    <div className="absolute top-4 left-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
                                         {blog.category}
                                     </div>
                                 </div>
-                                <h3 className="text-lg font-bold text-gray-900 leading-snug mb-2 group-hover:text-emerald-600 transition-colors">
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-snug mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                                     {blog.title}
                                 </h3>
-                                <div className="flex items-center gap-3 text-xs text-gray-400 font-medium">
+                                <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500 font-medium">
                                     <span className="flex items-center gap-1">
                                         <BookOpen size={14} /> {blog.readTime}
                                     </span>
@@ -114,7 +115,7 @@ const AboutContent = () => {
             </section>
 
             {/* Mission Quote */}
-            <section className="bg-slate-900 rounded-[40px] p-12 lg:p-20 text-center relative overflow-hidden">
+            <section className="bg-slate-900 dark:bg-slate-950/80 rounded-[40px] p-12 lg:p-20 text-center relative overflow-hidden border border-white/5">
                 <div className="absolute inset-0 opacity-20">
                     <div className="absolute top-0 left-0 w-64 h-64 bg-emerald-500 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2"></div>
                     <div className="absolute bottom-0 right-0 w-64 h-64 bg-slate-500 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2"></div>
@@ -124,7 +125,7 @@ const AboutContent = () => {
                     <h2 className="text-3xl lg:text-4xl font-bold text-white mb-8 italic">
                         "Redefining the way the world moves, one journey at a time."
                     </h2>
-                    <div className="w-20 h-1 bg-emerald-600 mx-auto rounded-full"></div>
+                    <div className="w-20 h-1 bg-emerald-600 dark:bg-emerald-500 mx-auto rounded-full"></div>
                 </div>
             </section>
         </div>
@@ -133,12 +134,14 @@ const AboutContent = () => {
 
 const About = () => {
     return (
-        <div className="min-h-[calc(100vh-4rem)] bg-gray-50 flex flex-col">
-            <div className="flex-1 py-12">
-                <AboutContent />
+        <AppLayout>
+            <div className="min-h-screen bg-transparent flex flex-col">
+                <div className="flex-1 py-12">
+                    <AboutContent />
+                </div>
+                <Footer />
             </div>
-            <Footer />
-        </div>
+        </AppLayout>
     );
 };
 

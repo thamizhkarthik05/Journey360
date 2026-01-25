@@ -5,71 +5,79 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-NEWS_KEYWORDS = [
-    "crime", "protest", "riot", "flood",
-    "fire", "accident", "earthquake", "alert"
+SAFETY_KEYWORDS = [
+    "crime", "shooting", "attack", "riot",
+    "protest", "flood", "earthquake",
+    "fire", "explosion", "terror", "alert"
 ]
 
 SEVERITY_MAP = {
     "earthquake": "High",
+    "attack": "High",
+    "terror": "High",
     "riot": "High",
     "flood": "High",
     "fire": "Medium",
     "protest": "Medium",
     "crime": "Medium",
-    "accident": "Low",
-    "alert": "Low"
 }
 
 def detect_severity(text: str) -> str:
     text = text.lower()
-    for keyword, level in SEVERITY_MAP.items():
-        if keyword in text:
+    for key, level in SEVERITY_MAP.items():
+        if key in text:
             return level
     return "Low"
 
-def get_safety_news(location: str, limit=5):
+def get_safety_news(city: str, country: str, limit=5):
     api_key = os.getenv("NEWS_API_KEY")
     if not api_key:
         raise RuntimeError("NEWS_API_KEY missing")
 
-    from_date = (datetime.utcnow() - timedelta(days=5)).strftime("%Y-%m-%d")
+    from_date = (datetime.utcnow() - timedelta(days=3)).strftime("%Y-%m-%d")
 
-    url = "https://newsapi.org/v2/everything"
+    # 1. Try Specific Local Search
+    query = f"{city} {country} AND ({' OR '.join(SAFETY_KEYWORDS)})"
     params = {
-        "q": f'"{location}"',
+        "q": query,
         "from": from_date,
         "language": "en",
         "sortBy": "publishedAt",
-        "pageSize": 20,
+        "pageSize": limit,
         "apiKey": api_key
     }
-
+    
     try:
-        res = requests.get(url, params=params, timeout=10)
-        res.raise_for_status()  # ✅ will raise HTTPError for 4xx/5xx
+        res = requests.get("https://newsapi.org/v2/everything", params=params, timeout=10)
         data = res.json()
-    except requests.exceptions.RequestException as e:
-        print(f"NewsAPI request failed: {e}")
+        articles_raw = data.get("articles", [])
+        
+        # 2. Fallback: National Search if Local is empty and country is known
+        region_tag = "Local"
+        if not articles_raw and country:
+            print(f"DEBUG: No local news for {city}, trying {country} national news")
+            query = f"{country} AND ({' OR '.join(SAFETY_KEYWORDS)})"
+            params["q"] = query
+            res = requests.get("https://newsapi.org/v2/everything", params=params, timeout=10)
+            data = res.json()
+            articles_raw = data.get("articles", [])
+            region_tag = "National"
+
+        articles = []
+        for a in articles_raw:
+            text = f"{a.get('title','')} {a.get('description','')}"
+            articles.append({
+                "title": a.get("title"),
+                "source": a.get("source", {}).get("name"),
+                "link": a.get("url"),
+                "published": a.get("publishedAt", "").split("T")[0],
+                "severity": detect_severity(text),
+                "summary": a.get("description"),
+                "region": region_tag  # UI can use this to show "National News" badge
+            })
+
+        return articles
+
+    except Exception as e:
+        print(f"News Fetch Error: {e}")
         return []
-
-    articles = []
-
-    for entry in data.get("articles", []):
-        title = entry.get("title", "")
-        desc = entry.get("description") or ""
-        severity = detect_severity(f"{title} {desc}")
-
-        articles.append({
-            "title": title,
-            "source": entry.get("source", {}).get("name", "News"),
-            "link": entry.get("url"),
-            "published": entry.get("publishedAt", "").split("T")[0],
-            "severity": severity,
-            "summary": desc
-        })
-
-    if not articles:
-        print(f"No articles found for location: {location}")
-
-    return articles[:limit]
