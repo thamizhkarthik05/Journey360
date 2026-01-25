@@ -1,5 +1,5 @@
 import os
-from google import genai
+import google.generativeai as genai
 from dotenv import load_dotenv
 import datetime
 
@@ -11,8 +11,8 @@ def chat_with_assistant(user_message, trip_context=None):
         return {"reply": "I'm sorry, but my travel brain isn't configured yet! Please check the API settings."}
 
     try:
-        # Initialize the modern GenAI client
-        client = genai.Client(api_key=gemini_key)
+        # Configure the stable SDK
+        genai.configure(api_key=gemini_key)
         
         system_prompt = "You are Journey360 AI, a helpful and knowledgeable travel assistant. "
         if trip_context:
@@ -24,37 +24,27 @@ def chat_with_assistant(user_message, trip_context=None):
         # Combine system prompt and user message
         full_prompt = f"{system_prompt}\n\nUser: {user_message}"
         
-        # Retry logic for 429 Resource Exhausted
+        # Use the stable SDK with proven model names
         import time
-        # Tactic: Use a broad range of standard model names to ensure at least one works.
-        # 1.5-flash is preferred for speed/cost. 1.0-pro is the reliable fallback.
         models_to_try = [
             'gemini-1.5-flash',
-            'gemini-1.5-flash-latest', 
             'gemini-1.5-pro',
-            'gemini-1.0-pro',
-            'gemini-pro',
-            'gemini-2.0-flash-exp' 
+            'gemini-pro'
         ]
         
-        # Increase initial delay
         retry_delay = 2
-        max_retries = 2 # Reduce retries per model to fail over faster
+        max_retries = 2
         
         for model_name in models_to_try:
             for attempt in range(max_retries):
                 try:
-                    # print(f"DEBUG: Chatbot attempting model {model_name} (Attempt {attempt+1})")
-                    response = client.models.generate_content(
-                        model=model_name,
-                        contents=full_prompt
-                    )
+                    model = genai.GenerativeModel(model_name)
+                    response = model.generate_content(full_prompt)
                     
                     if response.text:
                         return {"reply": response.text.strip()}
                 except Exception as e:
                     err_str = str(e)
-                    # print(f"DEBUG: Error on {model_name}: {err_str}")
 
                     # Handle Permission Denied (403) - Key Leaked/Invalid
                     if "403" in err_str or "PERMISSION_DENIED" in err_str:
@@ -63,7 +53,6 @@ def chat_with_assistant(user_message, trip_context=None):
                     
                     # If 404 (Not Found) or 400 (Invalid), fail immediately to next model
                     if "404" in err_str or "NOT_FOUND" in err_str or "400" in err_str:
-                        # print(f"DEBUG: Model {model_name} not available. Skipping.")
                         break
 
                     # Handle Rate Limit (429)
