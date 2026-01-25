@@ -27,13 +27,13 @@ def chat_with_assistant(user_message, trip_context=None):
         # Use the stable SDK with proven model names
         import time
         models_to_try = [
-            'gemini-1.5-flash',
-            'gemini-1.5-pro',
+            'gemini-2.5-flash',
+            'gemini-2.5-pro',
             'gemini-pro'
         ]
         
-        retry_delay = 2
-        max_retries = 2
+        retry_delay = 5
+        max_retries = 5
         
         for model_name in models_to_try:
             for attempt in range(max_retries):

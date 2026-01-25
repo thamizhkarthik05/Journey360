@@ -24,11 +24,8 @@ import Profile from "./pages/profile/Profile";
 import ItineraryPage from "./pages/Itinerary/ItineraryPage";
 import SafetyPage from "./pages/Safety/SafetyPage";
 import MyTripsPage from "./pages/dashboard/MyTripsPage";
-<<<<<<< HEAD
 import TermsOfService from "./pages/TermsOfService";
-=======
 import ARConnect from "./pages/navigation/ARConnect";
->>>>>>> 0888a7130c453ae1b524a39e0df222067f8a242c
 import Navbar from "./components/layout/Navbar";
 
 
@@ -54,7 +51,7 @@ export default function App() {
     if (loading) return; // Wait for initial auth check
 
     // ✅ Allow public routes
-    const publicRoutes = ["/", "/login", "/signup", "/about", "/services", "/contact", "/ar-connect"];
+    const publicRoutes = ["/", "/login", "/signup", "/about", "/services", "/contact", "/ar-connect", "/tos"];
     const isPublic = publicRoutes.includes(location.pathname) || location.pathname.startsWith('/blog/');
 
     // ❌ Block protected routes if not logged in
@@ -79,6 +76,7 @@ export default function App() {
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/tos" element={<TermsOfService />} />
+        <Route path="/ar-connect" element={<ARConnect />} />
 
 
         {/* Protected Routes */}
@@ -116,15 +114,6 @@ export default function App() {
           path="/settings"
           element={user ? <Settings /> : <Navigate to="/login" replace />}
         />
-
-        import ARConnect from "./pages/navigation/ARConnect";
-        // ... (start of existing imports)
-
-        // In public routes check:
-        //     const publicRoutes = ["/", "/login", "/signup", "/about", "/services", "/contact", "/ar-connect"];
-
-        // In Routes:
-        <Route path="/ar-connect" element={<ARConnect />} />
 
         <Route
           path="/saved"
