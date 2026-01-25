@@ -23,6 +23,26 @@ else:
 
 def verify_token(id_token: str):
     if os.getenv("OFFLINE_MODE") == "true" or id_token == "mock_token":
-        print("DEBUG: Returning mock user for token verification")
+        print(f"DEBUG: Firebase running in OFFLINE_MODE. Attempting lazy decode for token.")
+        if id_token == "mock_token":
+            return {"uid": "mock_user_123", "email": "mock@example.com"}
+        
+        try:
+            # Try to decode without verification using python-jose
+            from jose import jwt
+            # Firebase tokens are usually RS256, but we don't care about the key in offline mode
+            # We just want the payload.
+            unverified_claims = jwt.get_unverified_claims(id_token)
+            if unverified_claims:
+                print(f"DEBUG: Lazy decode success for {unverified_claims.get('email')}")
+                return {
+                    "uid": unverified_claims.get("sub") or unverified_claims.get("user_id"),
+                    "email": unverified_claims.get("email"),
+                    "name": unverified_claims.get("name")
+                }
+        except Exception as e:
+            print(f"DEBUG: Lazy decode failed: {e}. Falling back to default mock.")
+            
         return {"uid": "mock_user_123", "email": "mock@example.com"}
+    
     return auth.verify_id_token(id_token)
