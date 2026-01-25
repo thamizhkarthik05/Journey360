@@ -105,32 +105,44 @@ const ChatInterface = () => {
 
                             {/* Message Bubble with Enhanced Styling */}
                             {msg.type === 'text' && (
-                                <div className={`group relative p-4 rounded-2xl shadow-sm leading-relaxed transition-all hover:shadow-md ${msg.sender === 'user'
-                                    ? 'bg-gradient-to-br from-emerald-600 to-teal-600 text-white rounded-br-sm'
-                                    : 'bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 text-gray-700 dark:text-gray-200 rounded-bl-sm'
+                                <div className={`group relative p-4 rounded-2xl shadow-sm leading-relaxed transition-all hover:shadow-md ${msg.content.includes("System Alert") || msg.content.includes("⚠️")
+                                        ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 rounded-bl-sm'
+                                        : msg.sender === 'user'
+                                            ? 'bg-gradient-to-br from-emerald-600 to-teal-600 text-white rounded-br-sm'
+                                            : 'bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 text-gray-700 dark:text-gray-200 rounded-bl-sm'
                                     }`}>
                                     {msg.sender === 'user' ? (
                                         <p className="text-sm">{msg.content}</p>
                                     ) : (
                                         <div className="text-sm prose prose-sm dark:prose-invert max-w-none text-gray-700 dark:text-gray-300">
-                                            <ReactMarkdown
-                                                remarkPlugins={[remarkGfm]}
-                                                components={{
-                                                    strong: ({ children }) => <span className="font-bold text-gray-900 dark:text-white">{children}</span>,
-                                                    ul: ({ children }) => <ul className="list-disc ml-4 space-y-1.5 my-3">{children}</ul>,
-                                                    ol: ({ children }) => <ol className="list-decimal ml-4 space-y-1.5 my-3">{children}</ol>,
-                                                    li: ({ children }) => <li className="pl-1">{children}</li>,
-                                                    p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-                                                    a: ({ children, href }) => <a href={href} className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium">{children}</a>,
-                                                    h3: ({ children }) => <h3 className="font-bold text-lg text-gray-900 dark:text-white mt-3 mb-2">{children}</h3>,
-                                                    code: ({ inline, children }) =>
-                                                        inline
-                                                            ? <code className="bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>
-                                                            : <code className="block bg-gray-100 dark:bg-slate-700 p-3 rounded-lg text-xs font-mono overflow-x-auto my-2">{children}</code>
-                                                }}
-                                            >
-                                                {msg.content}
-                                            </ReactMarkdown>
+                                            {msg.content.includes("System Alert") ? (
+                                                <div className="flex items-start gap-2">
+                                                    <span className="text-lg">⚠️</span>
+                                                    <div>
+                                                        <strong className="block mb-1">System Alert</strong>
+                                                        {msg.content.replace("⚠️ System Alert:", "").replace("System Alert:", "").trim()}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <ReactMarkdown
+                                                    remarkPlugins={[remarkGfm]}
+                                                    components={{
+                                                        strong: ({ children }) => <span className="font-bold text-gray-900 dark:text-white">{children}</span>,
+                                                        ul: ({ children }) => <ul className="list-disc ml-4 space-y-1.5 my-3">{children}</ul>,
+                                                        ol: ({ children }) => <ol className="list-decimal ml-4 space-y-1.5 my-3">{children}</ol>,
+                                                        li: ({ children }) => <li className="pl-1">{children}</li>,
+                                                        p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                                                        a: ({ children, href }) => <a href={href} className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium">{children}</a>,
+                                                        h3: ({ children }) => <h3 className="font-bold text-lg text-gray-900 dark:text-white mt-3 mb-2">{children}</h3>,
+                                                        code: ({ inline, children }) =>
+                                                            inline
+                                                                ? <code className="bg-gray-100 dark:bg-slate-700 px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>
+                                                                : <code className="block bg-gray-100 dark:bg-slate-700 p-3 rounded-lg text-xs font-mono overflow-x-auto my-2">{children}</code>
+                                                    }}
+                                                >
+                                                    {msg.content}
+                                                </ReactMarkdown>
+                                            )}
                                         </div>
                                     )}
                                 </div>

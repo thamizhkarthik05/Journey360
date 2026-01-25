@@ -19,8 +19,8 @@ try:
     # client.models.list() returns an iterator
     pager = client.models.list()
     for model in pager:
-        # Filter for generateContent support
-        if "generateContent" in model.supported_generation_methods:
-             print(f"Model: {model.name} | Display: {model.display_name}")
+        print(f"Model: {model.name}")
+        # print(dir(model)) # Debug
+        continue
 except Exception as e:
     print(f"Error listing models: {e}")
