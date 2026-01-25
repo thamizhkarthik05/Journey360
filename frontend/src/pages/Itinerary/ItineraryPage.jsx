@@ -152,7 +152,7 @@ const PriceDisplay = ({ amount, sourceCode = 'INR', targetCode = 'INR', classNam
     );
 };
 
-const TimelineEvent = ({ event, index, total, onLocate, onLaunchAR, sourceCurrencyCode, targetCurrencyCode }) => {
+const TimelineEvent = ({ event, index, total, onLocate, onLaunchAR, sourceCurrencyCode, targetCurrencyCode, isSaved, onToggleSave }) => {
     const isHotel = event.category?.toLowerCase() === 'hotel';
 
     return (
@@ -217,6 +217,20 @@ const TimelineEvent = ({ event, index, total, onLocate, onLaunchAR, sourceCurren
                         </div>
 
                         <div className="flex gap-2">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onToggleSave && onToggleSave(event);
+                                }}
+                                className={`p-1.5 rounded-lg border shadow-sm transition-all flex items-center justify-center ${isSaved
+                                    ? 'bg-rose-50 border-rose-100 text-rose-500 hover:bg-rose-100'
+                                    : 'bg-white border-slate-100 text-slate-400 hover:text-rose-500 hover:bg-rose-50 hover:border-rose-100'
+                                    }`}
+                                title={isSaved ? "Remove from Saved" : "Save Place"}
+                            >
+                                <Save size={14} className={isSaved ? "fill-current" : ""} />
+                            </button>
+
                             {isHotel ? (
                                 <>
                                     <button
@@ -278,6 +292,66 @@ const ItineraryPage = () => {
 
     // User Preference State
     const [targetCurrency, setTargetCurrency] = useState('INR');
+
+    // Saved Places State
+    const [savedPlacesMap, setSavedPlacesMap] = useState(new Map()); // Name -> ID
+
+    useEffect(() => {
+        const fetchSavedPlaces = async () => {
+            if (!auth.currentUser) return;
+            try {
+                const savedList = await apiService.getSavedPlaces(auth);
+                const map = new Map(savedList.map(p => [p.name, p.placeId]));
+                setSavedPlacesMap(map);
+            } catch (err) {
+                console.warn("Failed to sync saved places:", err);
+            }
+        };
+        fetchSavedPlaces();
+    }, [auth.currentUser]);
+
+    const handleToggleSave = async (place) => {
+        if (!auth.currentUser) {
+            alert("Please login to save places.");
+            return;
+        }
+
+        const isSaved = savedPlacesMap.has(place.name);
+
+        try {
+            if (isSaved) {
+                // Remove
+                const placeId = savedPlacesMap.get(place.name);
+                await apiService.removeSavedPlace(auth, placeId);
+                const newMap = new Map(savedPlacesMap);
+                newMap.delete(place.name);
+                setSavedPlacesMap(newMap);
+            } else {
+                // Save
+                // Generate a stable-ish ID or random? Random is fine as we map by Name locally for now.
+                // Ideally backend handles uniqueness, but we need ID for deletes.
+                const newPlaceId = crypto.randomUUID();
+                const payload = {
+                    placeId: newPlaceId,
+                    name: place.name,
+                    category: place.category || "Attraction", // Fallback
+                    lat: place.lat ? parseFloat(place.lat) : null,
+                    lng: place.lng ? parseFloat(place.lng) : null,
+                    address: place.address || itinerary.destination, // Context
+                    notes: place.description || "Saved from Itinerary",
+                    image: null
+                };
+
+                await apiService.savePlace(auth, payload);
+                const newMap = new Map(savedPlacesMap);
+                newMap.set(place.name, newPlaceId);
+                setSavedPlacesMap(newMap);
+            }
+        } catch (err) {
+            console.error("Save action failed:", err);
+            alert("Failed to update saved places");
+        }
+    };
 
     useEffect(() => {
         const fetchItineraryAndPrefs = async () => {
@@ -492,6 +566,8 @@ const ItineraryPage = () => {
                                             onLaunchAR={handleLaunchAR}
                                             sourceCurrencyCode={sourceCurrencyCode}
                                             targetCurrencyCode={targetCurrency}
+                                            isSaved={savedPlacesMap.has(place.name)}
+                                            onToggleSave={handleToggleSave}
                                         />
                                     ))}
                                 </div>
@@ -580,8 +656,20 @@ const ItineraryPage = () => {
                                                         className="w-full bg-white p-3 rounded-2xl border border-slate-50 shadow-sm flex flex-col gap-3 hover:border-teal-200 hover:bg-slate-50/50 transition-all cursor-pointer group/hotel"
                                                     >
                                                         <div className="flex gap-3 items-center">
-                                                            <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-teal-600 text-lg group-hover/hotel:scale-110 transition-transform">
+                                                            <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center text-teal-600 text-lg group-hover/hotel:scale-110 transition-transform relative">
                                                                 🏨
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        handleToggleSave(hotel);
+                                                                    }}
+                                                                    className={`absolute -top-2 -right-2 p-1 rounded-full shadow-sm border ${savedPlacesMap.has(hotel.name)
+                                                                            ? 'bg-rose-50 border-rose-100 text-rose-500'
+                                                                            : 'bg-white border-slate-100 text-slate-300 hover:text-rose-500'
+                                                                        }`}
+                                                                >
+                                                                    <Save size={12} className={savedPlacesMap.has(hotel.name) ? "fill-current" : ""} />
+                                                                </button>
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <div className="flex justify-between items-start">

@@ -75,14 +75,17 @@ try:
     from backend.trips.routes import router as trips_router
     from backend.ai.routes import router as ai_router
     from backend.users.routes import router as users_router
+    from backend.saved_places.routes import router as saved_places_router
 except ImportError:
     from trips.routes import router as trips_router
     from ai.routes import router as ai_router
     from users.routes import router as users_router
+    from saved_places.routes import router as saved_places_router
 
 app.include_router(trips_router, tags=["Trips"])
 app.include_router(ai_router, tags=["AI"])
 app.include_router(users_router, tags=["Users"])
+app.include_router(saved_places_router, tags=["Saved Places"])
 from backend.services.news_service import get_safety_news
 from fastapi import Query
 @app.get("/ai/safety/risk")

@@ -2,8 +2,14 @@ import os
 import requests
 from dotenv import load_dotenv
 
+try:
+    from backend.utils.cache import persistent_cache
+except ImportError:
+    from utils.cache import persistent_cache
+
 load_dotenv()
 
+@persistent_cache(duration_hours=48) # Cache restaurants longer
 def search_restaurants(location):
     """
     Search for restaurants using SerpAPI's Google Local engine.

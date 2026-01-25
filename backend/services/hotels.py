@@ -6,8 +6,14 @@ try:
 except ImportError:
     from services.places import get_coordinates
 
+try:
+    from backend.utils.cache import persistent_cache
+except ImportError:
+    from utils.cache import persistent_cache
+
 load_dotenv()
 
+@persistent_cache(duration_hours=24)
 def search_hotels(location, check_in_date=None, check_out_date=None):
     """
     Search for hotels using SerpAPI's Google Hotels engine.

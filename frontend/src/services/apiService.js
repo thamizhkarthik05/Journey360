@@ -14,13 +14,21 @@ export const apiService = {
     // Trip Endpoints
     createTrip: async (auth, tripData) => {
         const headers = await getHeaders(auth);
-        const response = await fetch(`${BASE_URL}/trip/create`, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(tripData)
-        });
-        if (!response.ok) throw new Error("Failed to create trip");
-        return response.json();
+        try {
+            const response = await fetch(`${BASE_URL}/trip/create`, {
+                method: "POST",
+                headers,
+                body: JSON.stringify(tripData)
+            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to create trip (${response.status}): ${errorText}`);
+            }
+            return response.json();
+        } catch (error) {
+            console.error("API Error (createTrip):", error);
+            throw error;
+        }
     },
 
     listTrips: async (auth) => {
@@ -74,12 +82,22 @@ export const apiService = {
         let url = `${BASE_URL}/ai/chat?message=${encodeURIComponent(message)}`;
         if (tripId) url += `&trip_id=${tripId}`;
 
-        const response = await fetch(url, {
-            method: "POST",
-            headers
-        });
-        if (!response.ok) throw new Error("Failed to chat with AI");
-        return response.json();
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout for AI wait
+
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers,
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
+            if (!response.ok) throw new Error("Failed to chat with AI");
+            return response.json();
+        } catch (error) {
+            clearTimeout(timeoutId);
+            throw error;
+        }
     },
 
     assessSafety: async (auth, location) => {
@@ -171,6 +189,46 @@ export const apiService = {
             headers
         });
         if (!response.ok) throw new Error('Failed to disable 2FA');
+        return response.json();
+    },
+
+    // Saved Places Endpoints
+    getSavedPlaces: async (auth) => {
+        const headers = await getHeaders(auth);
+        const response = await fetch(`${BASE_URL}/saved-places`, {
+            headers
+        });
+        if (!response.ok) throw new Error("Failed to fetch saved places");
+        return response.json();
+    },
+
+    savePlace: async (auth, placeData) => {
+        const headers = await getHeaders(auth);
+        const response = await fetch(`${BASE_URL}/saved-places`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(placeData)
+        });
+        if (!response.ok) throw new Error("Failed to save place");
+        return response.json();
+    },
+
+    removeSavedPlace: async (auth, placeId) => {
+        const headers = await getHeaders(auth);
+        const response = await fetch(`${BASE_URL}/saved-places/${placeId}`, {
+            method: "DELETE",
+            headers
+        });
+        if (!response.ok) throw new Error("Failed to remove saved place");
+        return response.json();
+    },
+
+    checkIsSaved: async (auth, placeId) => {
+        const headers = await getHeaders(auth);
+        const response = await fetch(`${BASE_URL}/saved-places/check/${placeId}`, {
+            headers
+        });
+        if (!response.ok) throw new Error("Failed to check saved status");
         return response.json();
     }
 };

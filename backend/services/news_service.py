@@ -49,6 +49,15 @@ def get_safety_news(city: str, country: str, limit=5):
     
     try:
         res = requests.get("https://newsapi.org/v2/everything", params=params, timeout=10)
+        
+        if res.status_code == 429:
+            print("WARNING: NewsAPI Rate Limit Exceeded (429). returning empty.")
+            return []
+            
+        if res.status_code != 200:
+             print(f"NewsAPI Error {res.status_code}: {res.text}")
+             return []
+
         data = res.json()
         articles_raw = data.get("articles", [])
         
@@ -59,9 +68,11 @@ def get_safety_news(city: str, country: str, limit=5):
             query = f"{country} AND ({' OR '.join(SAFETY_KEYWORDS)})"
             params["q"] = query
             res = requests.get("https://newsapi.org/v2/everything", params=params, timeout=10)
-            data = res.json()
-            articles_raw = data.get("articles", [])
-            region_tag = "National"
+            
+            if res.status_code == 200:
+                data = res.json()
+                articles_raw = data.get("articles", [])
+                region_tag = "National"
 
         articles = []
         for a in articles_raw:

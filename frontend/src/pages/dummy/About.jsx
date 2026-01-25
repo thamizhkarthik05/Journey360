@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Globe, Shield, Users, ArrowRight } from 'lucide-react';
+import { BookOpen, Globe, Shield, Users, ArrowRight, Linkedin } from 'lucide-react';
 import AppLayout from '../../components/layout/AppLayout';
 import Footer from '../../components/layout/Footer';
+import aaronImage from '../../assets/images/aaron.jpg';
+import gowthamImage from '../../assets/images/gowtham.jpg';
+import karthikImage from '../../assets/images/karthik_new.jpg';
+import sandhiyaImage from '../../assets/images/sandhiya.png';
 
 const AboutContent = () => {
     return (
@@ -110,6 +114,69 @@ const AboutContent = () => {
                                 </div>
                             </article>
                         </Link>
+                    ))}
+                </div>
+            </section>
+
+            {/* Developers Team Section */}
+            <section className="mb-24">
+                <div className="flex justify-between items-end mb-12">
+                    <div>
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Our Developers Team</h2>
+                        <p className="text-gray-500 dark:text-gray-400">The architects behind the world's smartest travel companion.</p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {[
+                        {
+                            name: "Aaron Alphons Thomas",
+                            image: aaronImage,
+                            linkedin: "https://www.linkedin.com/in/aaron-alphons-thomas",
+                            imgStyle: { objectPosition: "center 15%", transform: "scale(2.2)" }
+                        },
+                        {
+                            name: "Gowtham G",
+                            image: gowthamImage,
+                            linkedin: "https://www.linkedin.com/in/gowtham-g-b38241338",
+                            imgStyle: { objectPosition: "center 35%", transform: "scale(2.4)" }
+                        },
+                        {
+                            name: "Kaarthik M",
+                            image: karthikImage,
+                            linkedin: "https://www.linkedin.com/in/kaarthik-m-47198728a",
+                            imgStyle: { objectPosition: "center top", transform: "scale(2.4) translateY(15px)" }
+                        },
+                        {
+                            name: "Sandhiya Umapathi",
+                            image: sandhiyaImage,
+                            linkedin: "https://www.linkedin.com/in/sandhiyaumapathi/",
+                            imgStyle: { objectPosition: "center center", transform: "scale(0.9)" }
+                        }
+                    ].map((dev, idx) => (
+                        <div key={idx} className="bg-white dark:bg-slate-900/50 rounded-3xl p-6 text-center border border-gray-100 dark:border-slate-800 hover:shadow-xl hover:shadow-emerald-900/10 transition-all group">
+                            <div className="relative w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-md">
+                                <div className="absolute inset-0 bg-emerald-100 dark:bg-emerald-900/30 blur-xl opacity-50"></div>
+                                <img
+                                    src={dev.image}
+                                    alt={dev.name}
+                                    style={dev.imgStyle || {}}
+                                    className="relative w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                                {dev.name}
+                            </h3>
+
+                            <a
+                                href={dev.linkedin}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-emerald-600 hover:text-white transition-all transform hover:-translate-y-1"
+                            >
+                                <Linkedin size={18} />
+                            </a>
+                        </div>
                     ))}
                 </div>
             </section>

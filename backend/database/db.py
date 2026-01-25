@@ -15,6 +15,7 @@ if mongo_uri:
     users_collection = db["users"]
     trips_collection = db["trips"]
     itineraries_collection = db["itineraries"]
+    saved_places_collection = db["saved_places"]
 else:
     # Handle missing config gracefully or let it fail later
     client = None
@@ -22,4 +23,5 @@ else:
     users_collection = None
     trips_collection = None
     itineraries_collection = None
+    saved_places_collection = None
     print("Warning: MONGO_URI not found in .env")

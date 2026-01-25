@@ -14,7 +14,11 @@ router = APIRouter()
 
 @router.post("/trip/create")
 def create_trip(data: dict, user=Depends(get_current_user)):
+    print(f"DEBUG: create_trip called by {user['email']}", flush=True)
+    print(f"DEBUG: Trip Data: {data}", flush=True)
+
     if trips_collection is None:
+        print("CRITICAL: trips_collection is None", flush=True)
         raise HTTPException(status_code=500, detail="Database not connected")
 
     trip_id = str(uuid.uuid4())

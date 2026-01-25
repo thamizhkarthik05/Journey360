@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { useState, useEffect } from "react";
+import { signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
 import { auth, googleProvider } from "../../services/firebase";
 import { apiService } from "../../services/apiService";
@@ -7,6 +7,24 @@ import { Mail, Lock, Check, Loader2, ShieldCheck, ArrowLeft } from 'lucide-react
 
 export default function LoginForm() {
   const navigate = useNavigate();
+
+  // Handle redirect result on component mount
+  const [checkingRedirect, setCheckingRedirect] = useState(true);
+
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (result) {
+          await check2FAStatus();
+        }
+        setCheckingRedirect(false);
+      })
+      .catch((error) => {
+        console.error("Redirect Sign-In Error:", error);
+        setError(error.message || "Failed to sign in with Google (Redirect)");
+        setCheckingRedirect(false);
+      });
+  }, []);
 
   const [step, setStep] = useState('login'); // 'login' | '2fa'
 
@@ -39,11 +57,24 @@ export default function LoginForm() {
       await check2FAStatus();
     } catch (error) {
       console.error("Google Sign-In Error:", error);
-      if (error.code === 'auth/popup-closed-by-user') {
+      if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
         setError("Sign-in cancelled.");
       } else {
         setError(error.message || "Failed to sign in with Google");
       }
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleRedirect = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      await signInWithRedirect(auth, googleProvider);
+      // Logic continues in useEffect after redirect
+    } catch (error) {
+      console.error("Google Redirect Error:", error);
+      setError(error.message || "Failed to initiate redirect sign-in");
       setLoading(false);
     }
   };
@@ -241,7 +272,8 @@ export default function LoginForm() {
         <button
           type="button"
           onClick={handleGoogleLogin}
-          className="flex items-center justify-center gap-2 border border-gray-200 rounded-xl py-2.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all active:bg-gray-100"
+          disabled={loading}
+          className={`flex items-center justify-center gap-2 border border-gray-200 rounded-xl py-2.5 text-xs font-semibold text-gray-700 transition-all ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 hover:border-gray-300 active:bg-gray-100'}`}
         >
           <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-4 h-4" alt="Google" />
           Google
@@ -253,6 +285,20 @@ export default function LoginForm() {
           Apple
         </button>
       </div>
+
+      {/* Fallback for Popup Issues caused by network/browser settings */}
+      {error && (error.includes("cancelled") || error.includes("closed") || error.includes("network")) && (
+        <div className="mt-4 text-center animate-in fade-in slide-in-from-top-1">
+          <p className="text-xs text-gray-500 mb-2">Popup blocked or network error?</p>
+          <button
+            type="button"
+            onClick={handleGoogleRedirect}
+            className="text-xs font-bold text-emerald-600 hover:text-emerald-700 hover:underline"
+          >
+            Try Redirect Login Method
+          </button>
+        </div>
+      )}
 
       {/* Signup */}
       <p className="text-sm text-center text-gray-500 mt-8 font-medium">
