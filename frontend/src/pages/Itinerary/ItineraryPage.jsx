@@ -10,6 +10,7 @@ import { auth } from '../../services/firebase';
 import { apiService } from '../../services/apiService';
 import AppLayout from '../../components/layout/AppLayout';
 import ARViewer from '../../components/navigation/ARViewer';
+import MobilePreviewModal from '../../components/navigation/MobilePreviewModal';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
@@ -79,16 +80,18 @@ const AutoPopupMarker = ({ position, label, bookingUrl, timestamp, onLaunchAR })
                                 Book Now
                             </a>
                         )}
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onLaunchAR && onLaunchAR({ name: label, lat: position[0], lng: position[1] });
-                            }}
-                            className="w-full py-1.5 bg-emerald-600 text-white text-[10px] font-bold rounded-lg flex items-center justify-center gap-1.5 hover:bg-emerald-700 transition-colors"
-                        >
-                            <Sparkles size={10} />
-                            Launch AR
-                        </button>
+                        <div className="flex gap-2 mt-2">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onLaunchAR && onLaunchAR({ name: label, lat: position[0], lng: position[1] });
+                                }}
+                                className="flex-1 py-1.5 bg-emerald-600 text-white text-[10px] font-bold rounded-lg flex items-center justify-center gap-1.5 hover:bg-emerald-700 transition-colors"
+                            >
+                                <Sparkles size={10} />
+                                Launch AR
+                            </button>
+                        </div>
                     </div>
                 </div>
             </Popup>
@@ -262,12 +265,12 @@ const TimelineEvent = ({ event, index, total, onLocate, onLaunchAR, sourceCurren
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        onLocate && onLocate(event);
+                                        onLaunchAR && onLaunchAR(event);
                                     }}
-                                    className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800/50 px-3 py-1.5 rounded-lg shadow-sm hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-all flex items-center gap-1.5"
+                                    className="flex-1 py-1.5 bg-emerald-600 text-white text-[10px] font-bold rounded-lg flex items-center justify-center gap-1.5 hover:bg-emerald-700 transition-colors"
                                 >
-                                    <MapIcon size={12} />
-                                    Locate
+                                    <Sparkles size={10} />
+                                    Launch AR
                                 </button>
                             )}
                         </div>
@@ -292,7 +295,8 @@ const ItineraryPage = () => {
     const [showHotels, setShowHotels] = useState(true);
 
     // AR State
-    const [activeAR, setActiveAR] = useState(null);
+    const [activeAR, setActiveAR] = useState(null); // Full screen AR
+    const [previewAR, setPreviewAR] = useState(null); // Mobile Preview Modal
 
     // User Preference State
     const [targetCurrency, setTargetCurrency] = useState('INR');
@@ -431,7 +435,8 @@ const ItineraryPage = () => {
 
     const handleLaunchAR = (place) => {
         if (place.lat && place.lng) {
-            setActiveAR({
+            // Updated to show Preview Modal first instead of direct full screen
+            setPreviewAR({
                 name: place.name || place.label,
                 lat: parseFloat(place.lat),
                 lng: parseFloat(place.lng)
@@ -724,11 +729,19 @@ const ItineraryPage = () => {
                 </main>
             </div>
 
-            {/* AR Overlay */}
+            {/* Direct Full Screen AR (Optional fallback) */}
             {activeAR && (
                 <ARViewer
                     destination={activeAR}
                     onClose={() => setActiveAR(null)}
+                />
+            )}
+
+            {/* Mobile Preview Modal */}
+            {previewAR && (
+                <MobilePreviewModal
+                    destination={previewAR}
+                    onClose={() => setPreviewAR(null)}
                 />
             )}
         </AppLayout>

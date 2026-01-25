@@ -26,17 +26,25 @@ def chat_with_assistant(user_message, trip_context=None):
         
         # Retry logic for 429 Resource Exhausted
         import time
-        # Tactic: Match Itinerary Generator models which are known to work.
-        models_to_try = ['gemini-flash-latest', 'gemini-pro-latest', 'gemini-2.0-flash']
+        # Tactic: Use a broad range of standard model names to ensure at least one works.
+        # 1.5-flash is preferred for speed/cost. 1.0-pro is the reliable fallback.
+        models_to_try = [
+            'gemini-1.5-flash',
+            'gemini-1.5-flash-latest', 
+            'gemini-1.5-pro',
+            'gemini-1.0-pro',
+            'gemini-pro',
+            'gemini-2.0-flash-exp' 
+        ]
         
-        # Increase initial delay to handle 11s+ wait times better
-        retry_delay = 5
-        max_retries = 5
+        # Increase initial delay
+        retry_delay = 2
+        max_retries = 2 # Reduce retries per model to fail over faster
         
         for model_name in models_to_try:
             for attempt in range(max_retries):
                 try:
-                    print(f"DEBUG: Chatbot attempting model {model_name} (Attempt {attempt+1})")
+                    # print(f"DEBUG: Chatbot attempting model {model_name} (Attempt {attempt+1})")
                     response = client.models.generate_content(
                         model=model_name,
                         contents=full_prompt
@@ -46,30 +54,26 @@ def chat_with_assistant(user_message, trip_context=None):
                         return {"reply": response.text.strip()}
                 except Exception as e:
                     err_str = str(e)
+                    # print(f"DEBUG: Error on {model_name}: {err_str}")
+
+                    # Handle Permission Denied (403) - Key Leaked/Invalid
+                    if "403" in err_str or "PERMISSION_DENIED" in err_str:
+                         print("CRITICAL: API Key Invalid or Leaked.")
+                         return {"reply": "⚠️ System Alert: The AI API Key is invalid or has been revoked. Please update the API key in settings."}
                     
-                    # Handle Not Found (Invalid Model Name) -> Switch Model Immediately
-                    if "404" in err_str or "NOT_FOUND" in err_str:
-                        print(f"DEBUG: Model {model_name} not found (404). Switching to next model...")
-                        break # Break inner loop to try next model
-                        
-                    # Handle Rate Limit -> Wait and Retry same model
+                    # If 404 (Not Found) or 400 (Invalid), fail immediately to next model
+                    if "404" in err_str or "NOT_FOUND" in err_str or "400" in err_str:
+                        # print(f"DEBUG: Model {model_name} not available. Skipping.")
+                        break
+
+                    # Handle Rate Limit (429)
                     if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
                         if attempt < max_retries - 1:
-                            print(f"Assistant Rate Limit (429) on {model_name}. Retrying in {retry_delay}s...")
                             time.sleep(retry_delay)
                             retry_delay *= 2
                             continue
                     
-                    # If other error, or max retries reached for 429, try next model?
-                    # Generally if 429 persists, switching model might help if quota is per-model (unlikely for free tier, but possible)
-                    # Let's verify if we should break or raise. 
-                    # If we exhausted retries on this model, maybe try next model as last resort.
-                    if attempt == max_retries - 1:
-                         print(f"DEBUG: Max retries reached for {model_name}. Trying next model...")
-                         break
-                         
-                    # For other unexpected errors, log and break to next model
-                    print(f"DEBUG: Error {err_str} on {model_name}. Trying next...")
+                    # For other unexpected errors, try next model
                     break
         
         # If we exit loops without returning

@@ -5,9 +5,10 @@ import { X, Navigation, Compass, MapPin, AlertCircle } from 'lucide-react';
 const ORS_API_KEY = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImMxNDEzYzM1ZjFkNzQzODRhYzBlYzJjMGZhMTVmODJhIiwiaCI6Im11cm11cjY0In0=";
 const WAYPOINT_THRESHOLD = 15; // meters
 
-const ARViewer = ({ destination, onClose }) => {
+const ARViewer = ({ destination, onClose, isEmbedded = false }) => {
   const containerRef = useRef(null);
   const videoRef = useRef(null);
+  // ... state ...
   const [info, setInfo] = useState("Initializing navigation...");
   const [error, setError] = useState(null);
   const [distanceText, setDistanceText] = useState("");
@@ -68,11 +69,45 @@ const ARViewer = ({ destination, onClose }) => {
       });
       if (videoRef.current) videoRef.current.srcObject = stream;
     } catch (err) {
+      if (isEmbedded) {
+        console.warn("Camera failed in preview, using mock background.");
+        // We will just let it fail silently and show a background color/image
+        return;
+      }
       throw new Error("Camera permission denied or not available.");
     }
   };
 
   const setupGeolocation = () => {
+    if (isEmbedded) {
+      // Mock Location for Preview (50m away from destination)
+      // Offset approx 0.0005 degrees
+      const mockLat = destination.lat - 0.0005;
+      const mockLng = destination.lng - 0.0005;
+
+      stateRef.current.userLat = mockLat;
+      stateRef.current.userLng = mockLng;
+
+      // Simulate finding route
+      getRoute(mockLat, mockLng).then(points => {
+        stateRef.current.routePoints = points;
+        setInfo("Demo Route Loaded");
+      }).catch(e => {
+        // Fallback straight line if API fails
+        stateRef.current.routePoints = [[mockLng, mockLat], [destination.lng, destination.lat]];
+        setInfo("Demo Mode (Offline)");
+      });
+
+      // Auto-rotate heading for effect
+      let heading = 0;
+      setInterval(() => {
+        heading = (heading + 1) % 360;
+        stateRef.current.phoneHeading = heading;
+      }, 50);
+
+      return;
+    }
+
     stateRef.current.watchId = navigator.geolocation.watchPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
@@ -98,6 +133,7 @@ const ARViewer = ({ destination, onClose }) => {
   };
 
   const setupCompass = () => {
+    // ... compass setup ...
     // Check if permission is needed for iOS 13+
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
       DeviceOrientationEvent.requestPermission()
@@ -113,6 +149,7 @@ const ARViewer = ({ destination, onClose }) => {
   };
 
   const handleOrientation = (e) => {
+    // ... orientation ...
     if (e.alpha !== null) {
       // Correct for absolute heading
       const heading = e.webkitCompassHeading || (360 - e.alpha);
@@ -121,6 +158,7 @@ const ARViewer = ({ destination, onClose }) => {
   };
 
   const getRoute = async (startLat, startLng) => {
+    // ... route logic ...
     const res = await fetch(
       "https://api.openrouteservice.org/v2/directions/foot-walking/geojson",
       {
@@ -144,14 +182,18 @@ const ARViewer = ({ destination, onClose }) => {
   };
 
   const initThree = () => {
+    // ... three init (renderer size needs to match container if embedded) ...
+    const width = isEmbedded ? 375 : window.innerWidth;
+    const height = isEmbedded ? 812 : window.innerHeight;
+
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
     camera.position.set(0, 0, 0);
     scene.add(camera);
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(width, height);
     if (containerRef.current) containerRef.current.appendChild(renderer.domElement);
 
     // --- LIGHTING ---
@@ -220,10 +262,16 @@ const ARViewer = ({ destination, onClose }) => {
   };
 
   const handleResize = () => {
+    // ... resize logic ...
     if (!stateRef.current.camera || !stateRef.current.renderer) return;
-    stateRef.current.camera.aspect = window.innerWidth / window.innerHeight;
+
+    // If embedded, we rely on the container size not window
+    const width = isEmbedded ? (containerRef.current?.clientWidth || 375) : window.innerWidth;
+    const height = isEmbedded ? (containerRef.current?.clientHeight || 812) : window.innerHeight;
+
+    stateRef.current.camera.aspect = width / height;
     stateRef.current.camera.updateProjectionMatrix();
-    stateRef.current.renderer.setSize(window.innerWidth, window.innerHeight);
+    stateRef.current.renderer.setSize(width, height);
   };
 
   const toRad = d => d * Math.PI / 180;
@@ -246,6 +294,7 @@ const ARViewer = ({ destination, onClose }) => {
   };
 
   const animate = () => {
+    // ... animate ...
     stateRef.current.animationId = requestAnimationFrame(animate);
     const state = stateRef.current;
     const time = Date.now() * 0.001;
@@ -325,7 +374,7 @@ const ARViewer = ({ destination, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black overflow-hidden select-none">
+    <div className={`${isEmbedded ? 'absolute inset-0' : 'fixed inset-0 z-[9999]'} bg-black overflow-hidden select-none`}>
       {/* Background Video Feed */}
       <video
         ref={videoRef}
@@ -339,13 +388,13 @@ const ARViewer = ({ destination, onClose }) => {
 
         {/* Top Header */}
         <div className="p-6 flex justify-between items-start">
-          <div className="bg-slate-900/80 backdrop-blur-xl p-4 rounded-3xl border border-white/10 text-white shadow-2xl animate-in slide-in-from-top duration-500">
+          <div className="bg-slate-900/80 backdrop-blur-xl p-4 rounded-3xl border border-white/10 text-white shadow-2xl animate-in slide-in-from-top duration-500 max-w-[80%]">
             <div className="flex items-center gap-3 mb-1">
-              <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shrink-0">
                 <Navigation size={16} fill="white" />
               </div>
-              <div>
-                <h2 className="font-bold text-lg leading-tight truncate max-w-[200px]">{destination.name}</h2>
+              <div className="min-w-0">
+                <h2 className="font-bold text-lg leading-tight truncate">{destination.name}</h2>
                 <div className="flex items-center gap-1.5 text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                   Active AR Navigation
@@ -354,12 +403,14 @@ const ARViewer = ({ destination, onClose }) => {
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-4 bg-white/10 hover:bg-white/20 active:scale-90 backdrop-blur-xl rounded-full text-white border border-white/10 transition-all pointer-events-auto shadow-2xl"
-          >
-            <X size={24} />
-          </button>
+          {!isEmbedded && (
+            <button
+              onClick={onClose}
+              className="p-4 bg-white/10 hover:bg-white/20 active:scale-90 backdrop-blur-xl rounded-full text-white border border-white/10 transition-all pointer-events-auto shadow-2xl"
+            >
+              <X size={24} />
+            </button>
+          )}
         </div>
 
         {/* The 3D AR Layer (Arrows/Lines) */}
@@ -413,12 +464,14 @@ const ARViewer = ({ destination, onClose }) => {
           <p className="text-slate-400 mb-10 max-w-sm leading-relaxed">
             {error}
           </p>
-          <button
-            onClick={onClose}
-            className="w-full max-w-[240px] py-4 bg-white text-slate-950 font-black rounded-2xl hover:bg-slate-200 active:scale-95 transition-all shadow-xl"
-          >
-            Dismiss
-          </button>
+          {!isEmbedded && (
+            <button
+              onClick={onClose}
+              className="w-full max-w-[240px] py-4 bg-white text-slate-950 font-black rounded-2xl hover:bg-slate-200 active:scale-95 transition-all shadow-xl"
+            >
+              Dismiss
+            </button>
+          )}
         </div>
       )}
     </div>
