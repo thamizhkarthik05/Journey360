@@ -154,14 +154,14 @@ const AboutContent = () => {
                             imgStyle: { objectPosition: "center center", transform: "scale(0.9)" }
                         }
                     ].map((dev, idx) => (
-                        <div key={idx} className="bg-white dark:bg-slate-900/50 rounded-3xl p-6 text-center border border-gray-100 dark:border-slate-800 hover:shadow-xl hover:shadow-emerald-900/10 transition-all group">
-                            <div className="relative w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-md">
+                        <div key={idx} className="bg-white/95 dark:bg-slate-900/50 backdrop-blur-xl rounded-[2.5rem] p-8 text-center border-t border-l border-white dark:border-slate-800 shadow-[0_15px_50px_rgba(0,0,0,0.03)] dark:shadow-none hover:shadow-[0_30px_60px_rgba(16,185,129,0.12)] hover:scale-[1.03] hover:-translate-y-2 transition-all duration-500 group flex flex-col items-center">
+                            <div className="relative w-36 h-36 mb-8 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-xl transition-all duration-500">
                                 <div className="absolute inset-0 bg-emerald-100 dark:bg-emerald-900/30 blur-xl opacity-50"></div>
                                 <img
                                     src={dev.image}
                                     alt={dev.name}
                                     style={dev.imgStyle || {}}
-                                    className="relative w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                    className="relative w-full h-full object-cover"
                                 />
                             </div>
                             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
@@ -172,9 +172,9 @@ const AboutContent = () => {
                                 href={dev.linkedin}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-emerald-600 hover:text-white transition-all transform hover:-translate-y-1"
+                                className="mt-auto inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gray-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-500 dark:hover:text-white transition-all duration-300 border border-transparent hover:border-emerald-100 dark:hover:border-emerald-500/30 shadow-sm"
                             >
-                                <Linkedin size={18} />
+                                <Linkedin size={20} />
                             </a>
                         </div>
                     ))}

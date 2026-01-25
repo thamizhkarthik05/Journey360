@@ -21,7 +21,7 @@ const Sidebar = () => {
     ];
 
     return (
-        <aside className="w-64 bg-white/40 dark:bg-slate-900/40 backdrop-blur-lg border-r border-white/20 dark:border-slate-800 flex flex-col h-full text-gray-600 dark:text-gray-400 shrink-0 transition-all duration-300">
+        <aside className="w-64 bg-slate-50/95 dark:bg-slate-900/40 backdrop-blur-lg border-r border-slate-200/50 dark:border-slate-800 flex flex-col h-full text-gray-600 dark:text-gray-400 shrink-0 transition-all duration-300">
             {/* Navigation */}
             <nav className="flex-1 px-3 py-6 space-y-2">
                 {navItems.map((item) => (

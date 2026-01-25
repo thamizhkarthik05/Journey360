@@ -24,11 +24,11 @@ const AppLayout = ({ children }) => {
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     backgroundAttachment: 'fixed',
-                    backgroundColor: isDark ? 'rgba(15, 23, 42, 0.82)' : 'rgba(255, 255, 255, 0.8)',
-                    backgroundBlendMode: isDark ? 'soft-light' : 'overlay'
+                    backgroundColor: isDark ? 'rgba(15, 23, 42, 0.82)' : '#f8fafc',
+                    backgroundBlendMode: isDark ? 'soft-light' : 'normal'
                 }}
             >
-                <div className={`flex flex-1 backdrop-blur-[6px] ${isDark ? 'bg-slate-950/40' : 'bg-white/20'}`}>
+                <div className={`flex flex-1 backdrop-blur-[4px] ${isDark ? 'bg-slate-950/40' : 'bg-slate-50/50'}`}>
                     <main className="flex-1 flex flex-col min-w-0 relative">
                         {children}
                     </main>
@@ -45,12 +45,12 @@ const AppLayout = ({ children }) => {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundAttachment: 'fixed',
-                backgroundColor: isDark ? 'rgba(15, 23, 42, 0.82)' : 'rgba(255, 255, 255, 0.8)',
-                backgroundBlendMode: isDark ? 'soft-light' : 'overlay'
+                backgroundColor: isDark ? 'rgba(15, 23, 42, 0.82)' : '#f8fafc',
+                backgroundBlendMode: isDark ? 'soft-light' : 'normal'
             }}
         >
             <DashboardNavbar />
-            <div className={`flex flex-1 overflow-hidden backdrop-blur-[6px] ${isDark ? 'bg-slate-950/40' : 'bg-white/20'}`}>
+            <div className={`flex flex-1 overflow-hidden backdrop-blur-[4px] ${isDark ? 'bg-slate-950/40' : 'bg-slate-50/50'}`}>
                 <Sidebar />
                 <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
                     <div className="flex-1 overflow-auto">

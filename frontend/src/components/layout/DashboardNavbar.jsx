@@ -114,7 +114,7 @@ const DashboardNavbar = () => {
                     </Link>
                     <button
                         onClick={handleLogout}
-                        className="flex items-center gap-2 text-sm font-semibold text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors"
+                        className="flex items-center gap-2 text-sm font-semibold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 px-3 py-1.5 rounded-lg transition-colors"
                     >
                         <LogOut size={16} />
                         Logout
