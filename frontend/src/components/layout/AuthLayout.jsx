@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import heroImage from "../../assets/images/login-hero-new.png";
 
 export default function AuthLayout({ children }) {
@@ -40,9 +41,9 @@ export default function AuthLayout({ children }) {
           <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 gap-3 max-w-lg mx-auto md:max-w-none">
             <span className="font-medium">© 2024 Journey360 AI. All rights reserved.</span>
             <div className="flex items-center gap-6 font-medium">
-              <a href="#" className="hover:text-emerald-600 transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-emerald-600 transition-colors">Terms of Service</a>
-              <a href="#" className="hover:text-emerald-600 transition-colors">Help Center</a>
+              <Link to="/tos" className="hover:text-emerald-600 transition-colors">Privacy Policy</Link>
+              <Link to="/tos" className="hover:text-emerald-600 transition-colors">Terms of Service</Link>
+              <Link to="/tos" className="hover:text-emerald-600 transition-colors">Help Center</Link>
             </div>
           </div>
         </footer>

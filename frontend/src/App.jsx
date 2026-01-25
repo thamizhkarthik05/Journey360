@@ -24,7 +24,9 @@ import Profile from "./pages/profile/Profile";
 import ItineraryPage from "./pages/Itinerary/ItineraryPage";
 import SafetyPage from "./pages/Safety/SafetyPage";
 import MyTripsPage from "./pages/dashboard/MyTripsPage";
+import TermsOfService from "./pages/TermsOfService";
 import Navbar from "./components/layout/Navbar";
+
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -72,6 +74,8 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/tos" element={<TermsOfService />} />
+
 
         {/* Protected Routes */}
         <Route
