@@ -73,20 +73,25 @@ def list_trips(user=Depends(get_current_user)):
     # Backfill images for existing trips
     from backend.services.image_service import get_destination_image
     
+    # TEMPORARY FIX: Commenting out synchronous backfill to prevent timeouts
+    # for trip in trips:
+    #     trip["_id"] = str(trip["_id"])
+    #     if "image_url" not in trip or not trip["image_url"]:
+    #         try:
+    #             dest = trip.get("destination", "Travel")
+    #             print(f"DEBUG: Backfilling image for {dest}...")
+    #             img_url = get_destination_image(dest)
+    #             if img_url:
+    #                 trip["image_url"] = img_url
+    #                 trips_collection.update_one(
+    #                     {"trip_id": trip["trip_id"]},
+    #                     {"$set": {"image_url": img_url}}
+    #                 )
+    #         except Exception as e:
+    #             print(f"DEBUG: Backfill error: {e}")
+    
+    # Just ensure ID is string
     for trip in trips:
         trip["_id"] = str(trip["_id"])
-        if "image_url" not in trip or not trip["image_url"]:
-            try:
-                dest = trip.get("destination", "Travel")
-                print(f"DEBUG: Backfilling image for {dest}...")
-                img_url = get_destination_image(dest)
-                if img_url:
-                    trip["image_url"] = img_url
-                    trips_collection.update_one(
-                        {"trip_id": trip["trip_id"]},
-                        {"$set": {"image_url": img_url}}
-                    )
-            except Exception as e:
-                print(f"DEBUG: Backfill error: {e}")
 
     return trips

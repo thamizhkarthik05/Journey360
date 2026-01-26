@@ -522,6 +522,8 @@ const ItineraryPage = () => {
                             ))}
 
                             <button
+                                onClick={handleRegenerate}
+                                disabled={regenerating}
                                 className="flex items-center gap-2 px-6 py-3 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 font-bold rounded-xl border-2 border-emerald-100 dark:border-emerald-800/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors whitespace-nowrap disabled:opacity-50"
                             >
                                 {regenerating ? <Loader2 className="animate-spin" size={20} /> : <span className="text-lg">✨</span>}

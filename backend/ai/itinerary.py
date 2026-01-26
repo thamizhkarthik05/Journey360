@@ -355,16 +355,22 @@ import time
 def call_llm(prompt, trip):
     start_time = time.time()
     def log(msg):
-        print(f"[{time.strftime('%H:%M:%S')}] DEBUG: {msg}", flush=True)
+        timestamp = time.strftime('%H:%M:%S')
+        print(f"[{timestamp}] DEBUG: {msg}", flush=True)
+        try:
+            with open("ai_debug.log", "a", encoding="utf-8") as f:
+                f.write(f"[{timestamp}] {msg}\n")
+        except:
+            pass
 
     if os.getenv("MOCK_AI") == "true" or os.getenv("OFFLINE_MODE") == "true":
         return get_mock_itinerary(trip, real_hotels=trip.get("_real_hotels"), real_restaurants=trip.get("_real_restaurants"), real_attractions=trip.get("_real_attractions"))
 
     default_models = [
-        "google/gemini-flash-latest",          # (FREE) High Quota (1.5 Flash alias)
-        "google/gemini-pro-latest",            # (FREE) High Intelligence (1.5 Pro alias)
-        "google/gemini-2.0-flash-lite",        # (FREE) Backup
-        "google/gemini-2.0-flash",             # (FREE) Backup
+        "google/gemini-2.0-flash",             # (FREE) Primary High Performance
+        "google/gemini-2.0-flash-lite",        # (FREE) Faster fallback
+        "google/gemini-flash-latest",          # (FREE) Valid 1.5 Flash Alias
+        "google/gemini-pro-latest",            # (FREE) Valid 1.5 Pro Alias
     ]
 
     duration = trip.get('days', 3)
