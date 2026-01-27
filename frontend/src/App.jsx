@@ -22,7 +22,7 @@ import Settings from "./pages/dummy/Settings";
 import SavedPlaces from "./pages/dummy/SavedPlaces";
 import Profile from "./pages/profile/Profile";
 import ItineraryPage from "./pages/Itinerary/ItineraryPage";
-import SafetyPage from "./pages/Safety/SafetyPage";
+import SafetyPage from "./pages/safety/SafetyPage";
 import MyTripsPage from "./pages/dashboard/MyTripsPage";
 import TermsOfService from "./pages/TermsOfService";
 import ARConnect from "./pages/navigation/ARConnect";
