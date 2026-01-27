@@ -29,6 +29,10 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:3000",
+    "https://journey-beta-two.vercel.app",
+    "https://journey-git-main-codesburners-projects.vercel.app",
+    "https://journey-360.vercel.app",
+    "https://journey360.vercel.app"
 ]
 
 app.add_middleware(
