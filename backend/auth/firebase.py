@@ -7,19 +7,33 @@ import os
 # For now, we wrap in try-except or check path, but user instructions say "Place it here".
 # I'll follow the exact user snippet but add a check to be friendly.
 
+import json
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 key_path = os.path.join(BASE_DIR, "firebase_key.json")
 
 if os.getenv("OFFLINE_MODE") == "true":
     print("DEBUG: Firebase running in OFFLINE_MODE (No initialization)")
 elif os.path.exists(key_path):
+    # Priority 1: Local File
     try:
         cred = credentials.Certificate(key_path)
         firebase_admin.initialize_app(cred)
+        print(f"DEBUG: Firebase initialized from file: {key_path}")
     except Exception as e:
-        print(f"Error initializing Firebase: {e}")
+        print(f"Error initializing Firebase from file: {e}")
+elif os.getenv("FIREBASE_CREDENTIALS"):
+    # Priority 2: Environment Variable (Render/Cloud)
+    try:
+        # Parse the JSON string from env var
+        cred_dict = json.loads(os.getenv("FIREBASE_CREDENTIALS"))
+        cred = credentials.Certificate(cred_dict)
+        firebase_admin.initialize_app(cred)
+        print("DEBUG: Firebase initialized from FIREBASE_CREDENTIALS env var")
+    except Exception as e:
+        print(f"Error initializing Firebase from Env Var: {e}")
 else:
-    print(f"Warning: {key_path} not found. Firebase Admin not initialized.")
+    print(f"Warning: {key_path} not found and FIREBASE_CREDENTIALS not set. Firebase Admin not initialized.")
 
 def verify_token(id_token: str):
     if os.getenv("OFFLINE_MODE") == "true" or id_token == "mock_token":

@@ -11,6 +11,20 @@
 
 ---
 
+
+---
+
+## ⚡ Quick Start (Evaluators)
+
+**The validation is automated.** You do not need to manually install dependencies or configure keys.
+
+1.  **Navigate** to the `Journey360` project folder.
+2.  **Double-click** the `run_journey360.bat` file.
+    *   *This will automatically install Python/Node requirements, configure API keys, and launch the app.*
+3.  The browser will open automatically to `http://localhost:5173`.
+
+---
+
 ## 🎯 Project Overview
 
 **Journey360** is a comprehensive travel planning and safety platform built with:
